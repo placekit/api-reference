@@ -1,0 +1,367 @@
+openapi: 3.1.0
+info:
+  title: PlaceKit API Reference
+  description: PlaceKit OpenAPI Specifications
+  termsOfService: https://www.placekit.io/terms
+  contact:
+    name: API Support
+    url: https://www.placekit.io/support
+  version: 1.0.0
+servers:
+- url: https://api.placekit.co
+security:
+- api_key: []
+paths:
+  /search:
+    post:
+      summary: Search for addresses
+      operationId: search
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Search query terms.
+                  example: 42 avenue Champs Elysees Paris
+                  default: ''
+                countries:
+                  type: array
+                  description: |
+                    Limit the results to given countries.
+                    Select only one country for the best results.
+                    Array of [two-letter ISO country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+                  example: ['fr']
+                  items:
+                    type: string
+                    enum:
+                    - en
+                    - fr
+                language:
+                  type: string
+                  description: |
+                    Language of the results, if available.
+                    [Two-letter ISO language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+                  example: fr
+                  enum:
+                  - en
+                  - fr
+                types:
+                  type: array
+                  description: |
+                    Select the types of record to return.
+                    Prepend with `-` to omit a type.
+                    Returns all types by default.
+                  items:
+                    $ref: '#/components/schemas/types'
+                maxResults:
+                  type: integer
+                  description: Maximum number of results to return.
+                  default: 5
+                  minimum: 1
+                  maximum: 20
+                coordinates:
+                  type: string
+                  description: |
+                    GPS coordinates latitude and longitude.
+                    Used to improve relevancy of results around the given area.
+                  example: 48.873662, 2.295063
+      responses:
+        200:
+          description: Returns a list of matching addresses
+          headers:
+            x-ratelimit-limit:
+              schema:
+                type: integer
+              description: Request limit per minute.
+              example: 5
+            x-ratelimit-remaining:
+              schema:
+                type: integer
+              description: The number of requests left for the time window.
+              example: 2
+            x-ratelimit-reset:
+              schema:
+                type: string
+                format: date-time
+              description: The UTC date/time at which the current rate limit window resets.
+              example: '1670414739'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/results'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl --location --request POST 'https://api.placekit.co/search' \
+          --header 'x-placekit-api-key: <PLACEKIT_API_KEY>' \
+          --data-raw '{
+            "query": "42 avenue Champs Elysees Paris",
+            "countries": ["fr"],
+            "language": "fr",
+            "types": ["street"],
+            "maxResults": 5,
+            "coordinates": "48.873662, 2.295063"
+          }'
+      - lang: Axios
+        source: |
+          var axios = require('axios');
+          var data = '{"query": "42 avenue Champs Elysees Paris", "countries": ["fr"], "language": "fr", "types": ["street"], "maxResults": 5, "coordinates": "48.873662, 2.295063"}';
+
+          var config = {
+            method: 'post',
+            url: 'https://api.placekit.co/search',
+            headers: { 
+              'x-placekit-api-key': '<PLACEKIT_API_KEY>'
+            },
+            data : data
+          };
+
+          axios(config)
+          .then(function (response) {
+            console.log(JSON.stringify(response.data));
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      - lang: GO
+        source: |
+          package main
+
+          import (
+            "fmt"
+            "strings"
+            "net/http"
+            "io/ioutil"
+          )
+
+          func main() {
+
+            url := "https://api.placekit.co/search"
+            method := "POST"
+
+            payload := strings.NewReader(`{
+            "query": "42 avenue Champs Elysees Paris",
+            "countries": ["fr"],
+            "language": "fr",
+            "types": ["street"],
+            "maxResults": 5,
+            "coordinates": "48.873662, 2.295063"
+          }`)
+
+            client := &http.Client {
+            }
+            req, err := http.NewRequest(method, url, payload)
+
+            if err != nil {
+              fmt.Println(err)
+              return
+            }
+            req.Header.Add("x-placekit-api-key", "<PLACEKIT_API_KEY>")
+
+            res, err := client.Do(req)
+            if err != nil {
+              fmt.Println(err)
+              return
+            }
+            defer res.Body.Close()
+
+            body, err := ioutil.ReadAll(res.Body)
+            if err != nil {
+              fmt.Println(err)
+              return
+            }
+            fmt.Println(string(body))
+          }
+      x-codegen-request-body-name: payload
+components:
+  schemas:
+    entity:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the current entity.
+          example: 42 Avenue des Champs Élysées
+        highlight:
+          type: string
+          description: Name of the current entity with highlighted matched words.
+          example: <mark>42 Avenue</mark> des <mark>Champs Élysées</mark>
+        city:
+          type: string
+          description: City name.
+          example: Paris 8e Arrondissement
+        county:
+          type: string
+          description: County name (department).
+          example: Paris
+        adminstrative:
+          type: string
+          description: Administrative name (region).
+          example: Île-de-France
+        country:
+          type: string
+          description: Country name.
+          example: France
+        countrycode:
+          type: string
+          description: |
+            [Two-letter ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+          example: 'fr'
+        zipcode:
+          type: array
+          description: Postcodes associated with the entity.
+          example:
+          - '75008'
+          items:
+            type: string
+        population:
+          type: integer
+          description: Population number of the entity city.
+          example: 2220445
+        lat:
+          type: number
+          description: Latitude.
+          example: 48.871086
+        lng:
+          type: number
+          description: Longitude.
+          example: 2.3036339
+        type:
+          type: string
+          description: Type of the entity.
+          example: street
+          enum:
+          - street
+          - city
+          - country
+          - airport
+          - bus
+          - train
+          - townhall
+          - tourism
+    results:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/entity'
+        resultsCount:
+          type: integer
+          description: Number of items results found.
+          example: 2
+        maxResults:
+          type: integer
+          description: Maximum number of results items returned.
+          example: 5
+        query:
+          type: string
+          description: Search text query used for this response.
+          example: '42 avenue Champs Elysees Paris'
+        params:
+          type: string
+          description: Parameters used for this query.
+          example: 'query=42%20avenue%20Champs%20Elysees%20Paris&maxResults=5'
+    types:
+      type: string
+      enum:
+      - street
+      - -street
+      - city
+      - -city
+      - country
+      - -country
+      - airport
+      - -airport
+      - bus
+      - -bus
+      - train
+      - -train
+      - townhall
+      - -townhall
+      - tourism
+      - -tourism
+  responses:
+    401:
+      description: Access denied authentication failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Access denied authentication failed
+    403:
+      description: You are not authorized to access this resource
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: You are not authorized to access this resource
+    404:
+      description: Unknown path, read the documentation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Access denied authentication failed
+    412:
+      description: Access denied missing credentials
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Access denied missing credentials
+    422:
+      description: Invalid body parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid body parameters
+    429:
+      description: Too many requests from this IP, please try again in a minute
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Too many requests from this IP, please try again in a minute
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: Generate your API key in the [app settings](https://app.placekit.io/).
+      name: x-placekit-api-key
+      in: header
