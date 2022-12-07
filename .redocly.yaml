@@ -1,0 +1,26 @@
+apis:
+  public@latest:
+    root: ./openapi.yml
+extends:
+  - recommended
+rules:
+  tag-description: off
+  operation-summary: error
+  no-unresolved-refs: error
+  no-unused-components: error
+  operation-2xx-response: error
+  operation-operationId: off
+  operation-singular-tag: error
+  no-enum-type-mismatch: error
+  no-identical-paths: error
+  no-ambiguous-paths: error
+  info-license: off
+
+features.openapi:
+  disableSearch: false
+  minCharacterLengthToInitSearch: 1
+  expandResponses: '200'
+  expandSingleSchemaField: true
+  hideDownloadButton: true
+  hideLogo: true
+  showObjectSchemaExamples: true
