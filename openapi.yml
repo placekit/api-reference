@@ -39,7 +39,7 @@ paths:
                   items:
                     type: string
                     enum:
-                    - en
+                    - gb
                     - fr
                 language:
                   type: string
