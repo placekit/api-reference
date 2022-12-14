@@ -211,7 +211,7 @@ components:
           type: string
           description: County name (department).
           example: Paris
-        adminstrative:
+        administrative:
           type: string
           description: Administrative name (region).
           example: Île-de-France
