@@ -320,7 +320,7 @@ components:
                 type: string
                 example: You are not authorized to access this resource
     404:
-      description: Unknown path, read the documentation
+      description: Route not found
       content:
         application/json:
           schema:
@@ -328,7 +328,7 @@ components:
             properties:
               message:
                 type: string
-                example: Access denied authentication failed
+                example: Route not found
     412:
       description: Access denied missing credentials
       content:
