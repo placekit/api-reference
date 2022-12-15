@@ -259,10 +259,10 @@ components:
     results:
       type: object
       properties:
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/entity'
+        query:
+          type: string
+          description: Search text query used for this response.
+          example: '42 avenue Champs Elysees Paris'
         resultsCount:
           type: integer
           description: Number of items results found.
@@ -271,10 +271,10 @@ components:
           type: integer
           description: Maximum number of results items returned.
           example: 5
-        query:
-          type: string
-          description: Search text query used for this response.
-          example: '42 avenue Champs Elysees Paris'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/entity'
     types:
       type: string
       enum:
