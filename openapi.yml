@@ -275,10 +275,6 @@ components:
           type: string
           description: Search text query used for this response.
           example: '42 avenue Champs Elysees Paris'
-        params:
-          type: string
-          description: Parameters used for this query.
-          example: 'query=42%20avenue%20Champs%20Elysees%20Paris&maxResults=5'
     types:
       type: string
       enum:
