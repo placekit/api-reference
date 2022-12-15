@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
   title: PlaceKit API Reference
-  description: PlaceKit OpenAPI Specifications
-  termsOfService: https://www.placekit.io/terms
+  description: PlaceKit OpenAPI Specifications ([repository](https://github.com/placekit/api-reference))
+  termsOfService: https://placekit.io/terms
   contact:
     name: API Support
-    url: https://www.placekit.io/support
+    url: https://placekit.io/
   version: 1.0.0
 servers:
 - url: https://api.placekit.co
