@@ -74,22 +74,26 @@ paths:
         200:
           description: Returns a list of matching addresses
           headers:
-            x-ratelimit-limit:
+            RateLimit-Limit:
               schema:
                 type: integer
               description: Request limit per minute.
               example: 5
-            x-ratelimit-remaining:
+            RateLimit-Remaining:
               schema:
                 type: integer
               description: The number of requests left for the time window.
               example: 2
-            x-ratelimit-reset:
+            RateLimit-Reset:
               schema:
-                type: string
-                format: date-time
-              description: The UTC date/time at which the current rate limit window resets.
-              example: '1670414739'
+                type: integer
+              description: Indicates how many seconds are left to wait before making a follow-up request. 
+              example: 34
+            Retry-After:
+              schema: 
+                type: integer
+              description: Indicates how many seconds to wait before making a follow-up request.
+              example: 60
           content:
             application/json:
               schema:
@@ -355,6 +359,9 @@ components:
               message:
                 type: string
                 example: Too many requests from this IP, please try again in a minute
+              status:
+                type: integer
+                example: 429
   securitySchemes:
     api_key:
       type: apiKey
