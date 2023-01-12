@@ -8,7 +8,7 @@
 
 <div align="center">
 
-  [![LICENSE](https://img.shields.io/github/license/placekit/api-reference?style=flat-square)](./LICENSE)
+  [![LICENSE](https://img.shields.io/github/license/placekit/api-reference?style=flat-square)](https://creativecommons.org/licenses/by-sa/4.0/)
   
 </div>
 
@@ -22,4 +22,5 @@ Find out about all available SDKs and libraries in our [GitHub organisation](htt
 
 ## ⚖️ License
 
-PlaceKit API Reference is an open-sourced software licensed under the [MIT license](./LICENSE).
+PlaceKit API Reference is an open-sourced software licensed under the [CC-BY-SA-4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
+The API usage depends on our [Terms and Conditions](https://placekit.io/terms). 

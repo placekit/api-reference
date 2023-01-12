@@ -1,9 +1,10 @@
 {
   "name": "api-reference",
   "version": "1.0.0",
+  "private": true,
   "author": "PlaceKit <support@placekit.io>",
   "description": "PlaceKit OpenAPI Reference",
-  "license": "MIT",
+  "license": "CC-BY-SA-4.0",
   "homepage": "https://github.com/placekit/api-reference#readme",
   "repository": {
     "type": "git",
