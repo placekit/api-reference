@@ -7,6 +7,9 @@ info:
     name: API Support
     url: https://placekit.io/
   version: 1.0.0
+  license:
+    name: CC-BY-SA-4.0
+    url: https://creativecommons.org/licenses/by-sa/4.0/
 servers:
 - url: https://api.placekit.co
 security:
@@ -252,14 +255,14 @@ components:
           description: Type of the entity.
           example: street
           enum:
-          - street
-          - city
-          - country
           - airport
           - bus
-          - train
-          - townhall
+          - city
+          - country
+          - street
           - tourism
+          - townhall
+          - train
     results:
       type: object
       properties:
@@ -282,22 +285,22 @@ components:
     types:
       type: string
       enum:
-      - street
-      - -street
-      - city
-      - -city
-      - country
-      - -country
       - airport
       - -airport
       - bus
       - -bus
-      - train
-      - -train
-      - townhall
-      - -townhall
+      - city
+      - -city
+      - country
+      - -country
+      - street
+      - -street
       - tourism
       - -tourism
+      - townhall
+      - -townhall
+      - train
+      - -train
   responses:
     401:
       description: Access denied authentication failed
