@@ -7,6 +7,9 @@ info:
     name: API Support
     url: https://placekit.io/
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://github.com/placekit/api-reference/blob/main/LICENSE
 servers:
 - url: https://api.placekit.co
 security:
