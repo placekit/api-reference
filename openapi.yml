@@ -38,9 +38,7 @@ paths:
                   example: ['fr']
                   items:
                     type: string
-                    enum:
-                    - gb
-                    - fr
+                    enum: [be, ca, ch, de, es, fr, gb, it, nl, pt, us]
                 language:
                   type: string
                   description: |
