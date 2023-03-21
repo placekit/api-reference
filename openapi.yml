@@ -15,6 +15,7 @@ paths:
   /search:
     post:
       summary: Search for addresses
+      description: FIXME
       operationId: search
       requestBody:
         description: Request parameters
@@ -22,88 +23,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                query:
-                  type: string
-                  description: Search query terms.
-                  example: 42 avenue Champs Elysees Paris
-                  default: ''
-                countries:
-                  type: array
-                  description: |
-                    Array of [two-letter ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).\
-                    Limit the results to given countries.\
-                    Select only one country for the best results.
-                  example: ['fr']
-                  items:
-                    type: string
-                language:
-                  type: string
-                  description: |
-                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
-                    Default results are in their original language.\
-                    By setting this parameter, you can change the language of the results, if the translation is available.\
-                    Contact us if you need other languages.
-                  example: fr
-                  enum:
-                  - en
-                  - fr
-                types:
-                  type: array
-                  description: |
-                    Select the types of record to return.\
-                    Prepend with `-` to omit a type.\
-                    Returns all types by default.
-                  items:
-                    $ref: '#/components/schemas/types'
-                maxResults:
-                  type: integer
-                  description: Maximum number of results to return.
-                  default: 5
-                  minimum: 1
-                  maximum: 20
-                coordinates:
-                  type: string
-                  description: |
-                    GPS coordinates latitude and longitude.\
-                    Used to improve relevancy of results around the given area.
-                  example: 48.873662, 2.295063
-                countryByIP:
-                  type: boolean
-                  default: false
-                  description: |
-                    Automatically select the country to search in via the user IP's detected location.\
-                    Returned results will be coming from the user's country's IP.\
-                    If set to `true`, the parameter `countries` acts as a fallback.
+              allOf:
+                - type: object
+                  properties:
+                    query:
+                      type: string
+                      description: Search query terms.
+                      example: 42 avenue Champs Elysees Paris
+                      default: ''
+                - $ref: '#/components/schemas/parameters'
       responses:
         200:
-          description: Returns a list of matching addresses
-          headers:
-            RateLimit-Limit:
-              schema:
-                type: integer
-              description: Request limit per minute.
-              example: 5
-            RateLimit-Remaining:
-              schema:
-                type: integer
-              description: The number of requests left for the time window.
-              example: 2
-            RateLimit-Reset:
-              schema:
-                type: integer
-              description: Indicates how many seconds are left to wait before making a follow-up request. 
-              example: 34
-            Retry-After:
-              schema: 
-                type: integer
-              description: Indicates how many seconds to wait before making a follow-up request.
-              example: 60
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/results'
+          $ref: '#/components/responses/200'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -200,8 +131,95 @@ paths:
             fmt.Println(string(body))
           }
       x-codegen-request-body-name: payload
+  /reverse:
+    post:
+      summary: Reverse geocoding
+      description: FIXME
+      operationId: reverse
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              allOf: 
+                - $ref: '#/components/schemas/parameters'
+                - type: object
+                  properties:
+                    countryByIP:
+                      type: boolean
+                      default: true
+                      description: |
+                        Automatically select the country to search in via the user IP's detected location.\
+                        Returned results will be coming from the user's country's IP.\
+                        If set to `true`, the parameter `countries` acts as a fallback.
+      responses:
+        200:
+          $ref: '#/components/responses/200'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
 components:
   schemas:
+    parameters:
+      type: object
+      properties:
+        countries:
+          type: array
+          description: |
+            Array of [two-letter ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).\
+            Limit the results to given countries.\
+            Select only one country for the best results.
+          example: ['fr']
+          items:
+            type: string
+        language:
+          type: string
+          description: |
+            [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+            Default results are in their original language.\
+            By setting this parameter, you can change the language of the results, if the translation is available.\
+            Contact us if you need other languages.
+          example: fr
+          enum:
+          - en
+          - fr
+        types:
+          type: array
+          description: |
+            Select the types of record to return.\
+            Prepend with `-` to omit a type.\
+            Returns all types by default.
+          items:
+            $ref: '#/components/schemas/types'
+        maxResults:
+          type: integer
+          description: Maximum number of results to return.
+          default: 5
+          minimum: 1
+          maximum: 20
+        coordinates:
+          type: string
+          description: |
+            GPS coordinates latitude and longitude.\
+            Used to improve relevancy of results around the given area.
+          example: 48.873662, 2.295063
+        countryByIP:
+          type: boolean
+          default: false
+          description: |
+            Automatically select the country to search in via the user IP's detected location.\
+            Returned results will be coming from the user's country's IP.\
+            If set to `true`, the parameter `countries` acts as a fallback.
     entity:
       type: object
       properties:
@@ -305,6 +323,33 @@ components:
       - tourism
       - -tourism
   responses:
+    200:
+      description: Returns a list of matching addresses
+      headers:
+        RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per minute.
+          example: 5
+        RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of requests left for the time window.
+          example: 2
+        RateLimit-Reset:
+          schema:
+            type: integer
+          description: Indicates how many seconds are left to wait before making a follow-up request. 
+          example: 34
+        Retry-After:
+          schema: 
+            type: integer
+          description: Indicates how many seconds to wait before making a follow-up request.
+          example: 60
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/results'
     401:
       description: Access denied authentication failed
       content:
