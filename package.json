@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/placekit/api-reference#readme",
   "dependencies": {
-    "@redocly/cli": "^1.0.0-beta.117"
+    "@redocly/cli": "^1.0.0-beta.124"
   }
 }
