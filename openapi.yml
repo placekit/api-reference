@@ -15,7 +15,12 @@ paths:
   /search:
     post:
       summary: Search for addresses
-      description: FIXME
+      description: |
+        Performs a forward geocoding search.
+
+        It will return results around `coordinates` (if provided) and the best matching textual relevance.
+
+        **It is highly recommended** to set the `countries` parameter with the country you need results from for the best accuracy and revelance possible.
       operationId: search
       requestBody:
         description: Request parameters
@@ -134,7 +139,11 @@ paths:
   /reverse:
     post:
       summary: Reverse geocoding
-      description: FIXME
+      description: |
+        Performs a reverse geocoding search.
+
+        It will return the closest results around `coordinates`.\
+        If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
       operationId: reverse
       requestBody:
         description: Request parameters
