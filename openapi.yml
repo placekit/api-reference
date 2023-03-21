@@ -322,6 +322,17 @@ components:
       - -townhall
       - tourism
       - -tourism
+    validationError:
+      type: object
+      properties:
+        value:
+          type: string
+        msg:
+          type: string
+        param:
+          type: string
+        location:
+          type: string
   responses:
     200:
       description: Returns a list of matching addresses
@@ -399,7 +410,20 @@ components:
             properties:
               message:
                 type: string
-                example: Invalid body parameters
+                example: 'Invalid body parameters. Check the API documentation: https://api.placekit.io/'
+              errors:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/validationError'
+                example:
+                  - value: 42
+                    msg: Must be an integer between 1 and 20 included.
+                    param: maxResults
+                    location: body
+                  - value: sx
+                    msg: This country is not supported. Contact us if you need it.
+                    param: countries[0]
+                    location: body
     429:
       description: Too many requests from this IP, please try again in a minute
       content:
