@@ -5,7 +5,7 @@ info:
   termsOfService: https://placekit.io/terms
   contact:
     name: API Support
-    url: https://placekit.io/
+    url: https://api.placekit.co
   version: 1.0.0
 servers:
 - url: https://api.placekit.co
@@ -32,18 +32,19 @@ paths:
                 countries:
                   type: array
                   description: |
-                    Limit the results to given countries.
+                    Array of [two-letter ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).\
+                    Limit the results to given countries.\
                     Select only one country for the best results.
-                    Array of [two-letter ISO country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
                   example: ['fr']
                   items:
                     type: string
-                    enum: [be, ca, ch, de, es, fr, gb, it, nl, pt, us]
                 language:
                   type: string
                   description: |
-                    Language of the results, if available.
-                    [Two-letter ISO language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Default results are in their original language.\
+                    By setting this parameter, you can change the language of the results, if the translation is available.\
+                    Contact us if you need other languages.
                   example: fr
                   enum:
                   - en
@@ -51,8 +52,8 @@ paths:
                 types:
                   type: array
                   description: |
-                    Select the types of record to return.
-                    Prepend with `-` to omit a type.
+                    Select the types of record to return.\
+                    Prepend with `-` to omit a type.\
                     Returns all types by default.
                   items:
                     $ref: '#/components/schemas/types'
@@ -65,9 +66,16 @@ paths:
                 coordinates:
                   type: string
                   description: |
-                    GPS coordinates latitude and longitude.
+                    GPS coordinates latitude and longitude.\
                     Used to improve relevancy of results around the given area.
                   example: 48.873662, 2.295063
+                countryByIP:
+                  type: boolean
+                  default: false
+                  description: |
+                    Automatically select the country to search in via the user IP's detected location.\
+                    Returned results will be coming from the user's country's IP.\
+                    If set to `true`, the parameter `countries` acts as a fallback.
       responses:
         200:
           description: Returns a list of matching addresses
@@ -224,7 +232,7 @@ components:
         countrycode:
           type: string
           description: |
-            [Two-letter ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+            [Two-letter ISO 3166-1 country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
           example: 'fr'
         zipcode:
           type: array
