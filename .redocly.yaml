@@ -16,11 +16,12 @@ rules:
   no-ambiguous-paths: error
   info-license: off
 
-features.openapi:
-  disableSearch: false
-  minCharacterLengthToInitSearch: 1
-  expandResponses: '200'
-  expandSingleSchemaField: true
-  hideDownloadButton: true
-  hideLogo: true
-  showObjectSchemaExamples: true
+theme: 
+  openapi:
+    disableSearch: false
+    minCharacterLengthToInitSearch: 1
+    expandResponses: '200'
+    expandSingleSchemaField: true
+    hideDownloadButton: true
+    hideLogo: true
+    showObjectSchemaExamples: true
