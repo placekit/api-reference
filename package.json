@@ -1,22 +1,23 @@
 {
   "name": "api-reference",
   "version": "1.0.0",
+  "private": true,
+  "author": "PlaceKit <support@placekit.io>",
   "description": "PlaceKit OpenAPI Reference",
+  "license": "CC-BY-SA-4.0",
+  "homepage": "https://github.com/placekit/api-reference#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/placekit/api-reference.git"
+  },
+  "bugs": {
+    "url": "https://github.com/placekit/api-reference/issues"
+  },
   "scripts": {
     "start": "redocly preview-docs",
     "build": "redocly build-docs -o dist/index.html",
     "lint": "redocly lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/placekit/api-reference.git"
-  },
-  "author": "Raphaël Daguenet <support@placekit.io>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/placekit/api-reference/issues"
-  },
-  "homepage": "https://github.com/placekit/api-reference#readme",
   "dependencies": {
     "@redocly/cli": "^1.0.0-beta.124"
   }
