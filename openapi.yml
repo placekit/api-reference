@@ -56,12 +56,15 @@ paths:
       - lang: curl
         source:
           $ref: code_samples/curl/search.sh
-      - lang: js
-        source:
-          $ref: code_samples/js/search.js
       - lang: go
         source:
           $ref: code_samples/go/search.go
+      - lang: js
+        source:
+          $ref: code_samples/js/search.js
+      - lang: python
+        source:
+          $ref: code_samples/python/search.py
       - lang: ruby
         source:
           $ref: code_samples/ruby/search.rb
@@ -111,12 +114,15 @@ paths:
       - lang: curl
         source:
           $ref: code_samples/curl/reverse.sh
-      - lang: js
-        source:
-          $ref: code_samples/js/reverse.js
       - lang: go
         source:
           $ref: code_samples/go/reverse.go
+      - lang: js
+        source:
+          $ref: code_samples/js/reverse.js
+      - lang: python
+        source:
+          $ref: code_samples/python/reverse.py
       - lang: ruby
         source:
           $ref: code_samples/ruby/reverse.rb
