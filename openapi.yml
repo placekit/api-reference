@@ -252,14 +252,14 @@ components:
           description: Type of the entity.
           example: street
           enum:
-          - airport
-          - bus
+          - street
           - city
           - country
-          - street
-          - tourism
-          - townhall
+          - airport
+          - bus
           - train
+          - townhall
+          - tourism
     results:
       type: object
       properties:
@@ -282,22 +282,22 @@ components:
     types:
       type: string
       enum:
-      - airport
-      - -airport
-      - bus
-      - -bus
+      - street
+      - -street
       - city
       - -city
       - country
       - -country
-      - street
-      - -street
-      - tourism
-      - -tourism
-      - townhall
-      - -townhall
+      - airport
+      - -airport
+      - bus
+      - -bus
       - train
       - -train
+      - townhall
+      - -townhall
+      - tourism
+      - -tourism
   responses:
     401:
       description: Access denied authentication failed
