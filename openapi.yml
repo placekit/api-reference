@@ -1,16 +1,25 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: PlaceKit API Reference
-  description: PlaceKit OpenAPI Specifications ([repository](https://github.com/placekit/api-reference))
+  description: |
+    [PlaceKit](https://placekit.io) is a worldwide geocoding API providing fast and accurate address autocomplete, store locator, and two-way geocoding for your app.
+
+    PlaceKit OpenAPI Specifications ([repository](https://github.com/placekit/api-reference))
   termsOfService: https://placekit.io/terms
   contact:
     name: API Support
+    email: support@placekit.io
     url: https://api.placekit.co
   version: 1.0.0
 servers:
 - url: https://api.placekit.co
 security:
 - api_key: []
+tags: 
+  - name: PlaceKit API
+    description: |
+      PlaceKit API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
+      API clients are simple wrappers on top of this API.
 paths:
   /search:
     post:
@@ -22,6 +31,7 @@ paths:
 
         **It is highly recommended** to set the `countries` parameter with the country you need results from for the best accuracy and revelance possible.
       operationId: search
+      tags: [ PlaceKit API ]
       requestBody:
         description: Request parameters
         required: false
@@ -78,6 +88,7 @@ paths:
         It will return the closest results around `coordinates`.\
         If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
       operationId: reverse
+      tags: [ PlaceKit API ]
       requestBody:
         description: Request parameters
         required: false
