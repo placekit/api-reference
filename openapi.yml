@@ -44,13 +44,7 @@ paths:
               required: 
                 - countries
               allOf:
-                - type: object
-                  properties:
-                    query:
-                      type: string
-                      description: Search query terms.
-                      example: 42 avenue Champs Elysees Paris
-                      default: ''
+                - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
       responses:
         200:
@@ -104,15 +98,7 @@ paths:
                 - countries
               allOf: 
                 - $ref: '#/components/schemas/parameters'
-                - type: object
-                  properties:
-                    countryByIP:
-                      type: boolean
-                      default: true
-                      description: |
-                        Automatically select the country to search in via the user IP's detected location.\
-                        Returned results will be coming from the user's country's IP.\
-                        If set to `true`, the parameter `countries` acts as a fallback.
+                - $ref: '#/components/schemas/parameters.countryByIP'
       responses:
         200:
           $ref: '#/components/responses/200'
@@ -147,15 +133,48 @@ paths:
       x-codegen-request-body-name: payload
   /patch:
     post:
-      summary: Retrieve patched data
+      summary: Retrieve data fixes
       description: |
-        Get all patched data for current user
+        Get all data fixes associated to the current app.\
+
+        You can refine the results by using the same parameters as the regular `/search` endpoint.
       tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf: 
+                - type: object
+                  properties:
+                    status:
+                      type: string
+                      default: all
+                      description: Select data fixes with the corresponding status.
+                      example: validated
+                      enum:
+                      - all
+                      - pending
+                      - validated
+                - $ref: '#/components/schemas/parameters.query'
+                - $ref: '#/components/schemas/parameters'
       responses:
         200:
           $ref: '#/components/responses/200'
         401:
           $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
     put:
       summary: Create a data fix
       description: |
@@ -300,6 +319,22 @@ components:
             Automatically select the country to search in via the user IP's detected location.\
             Returned results will be coming from the user's country's IP.\
             If set to `true`, the parameter `countries` acts as a fallback.
+    parameters.countryByIP:
+      properties: 
+        countryByIP:
+          type: boolean
+          default: true
+          description: |
+            Automatically select the country to search in via the user IP's detected location.\
+            Returned results will be coming from the user's country's IP.\
+            If set to `true`, the parameter `countries` acts as a fallback.
+    parameters.query:
+      properties:
+        query:
+          type: string
+          description: Search query terms.
+          example: 42 avenue Champs Elysees Paris
+          default: ''
     entity:
       type: object
       properties:
@@ -418,7 +453,7 @@ components:
           type: string
   responses:
     200:
-      description: Returns a list of matching addresses
+      description: Returns a list of matching entities
       headers:
         RateLimit-Limit:
           schema:
