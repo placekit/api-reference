@@ -41,6 +41,8 @@ paths:
         content:
           application/json:
             schema:
+              required: 
+                - countries
               allOf:
                 - type: object
                   properties:
@@ -98,6 +100,8 @@ paths:
         content:
           application/json:
             schema:
+              required: 
+                - countries
               allOf: 
                 - $ref: '#/components/schemas/parameters'
                 - type: object
