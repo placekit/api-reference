@@ -197,10 +197,6 @@ components:
           type: string
           description: Name of the current entity.
           example: 42 Avenue des Champs Élysées
-        highlight:
-          type: string
-          description: Name of the current entity with highlighted matched words.
-          example: <mark>42 Avenue</mark> des <mark>Champs Élysées</mark>
         city:
           type: string
           description: City name.
@@ -260,7 +256,14 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/entity'
+            allOf: 
+              - type: object
+                properties:
+                  highlight:
+                    type: string
+                    description: Name of the current entity with highlighted matched words.
+                    example: <mark>42 Avenue</mark> des <mark>Champs Élysées</mark> 
+              - $ref: '#/components/schemas/entity'
         resultsCount:
           type: integer
           description: Number of items results found.
