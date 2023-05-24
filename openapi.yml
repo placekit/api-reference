@@ -16,10 +16,13 @@ servers:
 security:
 - api_key: []
 tags: 
-  - name: PlaceKit API
+  - name: Geocoding
     description: |
-      PlaceKit API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
+      PlaceKit Geocoding API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
       API clients are simple wrappers on top of this API.
+  - name: Live Patching
+    description: |
+      PlaceKit Live Patching enables users to create a data validation flow in order to fix error or add new addresses, chose your validation flow and instantly publish it for your end-users.
 paths:
   /search:
     post:
@@ -31,7 +34,7 @@ paths:
 
         **It is highly recommended** to set the `countries` parameter with the country you need results from for the best accuracy and revelance possible.
       operationId: search
-      tags: [ PlaceKit API ]
+      tags: [ Geocoding ]
       requestBody:
         description: Request parameters
         required: false
@@ -88,7 +91,7 @@ paths:
         It will return the closest results around `coordinates`.\
         If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
       operationId: reverse
-      tags: [ PlaceKit API ]
+      tags: [ Geocoding ]
       requestBody:
         description: Request parameters
         required: false
@@ -138,6 +141,88 @@ paths:
         source:
           $ref: code_samples/ruby/reverse.rb
       x-codegen-request-body-name: payload
+  /patch:
+    post:
+      summary: Retrieve patched data
+      description: |
+        Get all patched data for current user
+      tags: [ Live Patching ]
+      responses:
+        200:
+          $ref: '#/components/responses/200'
+        401:
+          $ref: '#/components/responses/401'
+    put:
+      summary: Create a data fix
+      description: |
+        To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
+        You must also provide at least one of the property you want to modify in `update`.
+
+        If you want your data fixes to be immediately available to your end-users, set the property `status` to `validated`.\
+        Otherwise, the data fix will be marked as `pending` and will require the app owner to validate it first via the Dashboard or the API.
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                origin:
+                  required: 
+                    - name
+                    - city
+                    - county
+                    - administrative
+                    - country
+                    - countrycode
+                    - zipcode
+                    - population
+                    - lat
+                    - lng
+                    - type
+                  $ref: '#/components/schemas/entity'
+                update:
+                  description: |
+                    At least one property is necessary.
+                  minProperties: 1 
+                  $ref: '#/components/schemas/entity'
+                status:
+                  type: string
+                  default: pending
+                  description: |
+                    Status of the current data fix.\
+                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
+                    `validated`: data fix will immediately be available to end-users.
+                  example: pending
+                  enum:
+                  - pending
+                  - validated
+                language:
+                  type: string
+                  description: |
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Specify the language in which the data fix is written.
+                  example: fr
+                  enum:
+                  - en
+                  - fr
+      responses:
+        200:
+          $ref: '#/components/responses/200'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
 components:
   schemas:
     parameters:
@@ -231,11 +316,11 @@ components:
           example: 2220445
         lat:
           type: number
-          description: Latitude.
+          description: Latitude value between `-90` and `90`.
           example: 48.871086
         lng:
           type: number
-          description: Longitude.
+          description: Longitude value between `-180` and `180`.
           example: 2.3036339
         type:
           type: string
