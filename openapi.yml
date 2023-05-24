@@ -209,14 +209,35 @@ paths:
                   - en
                   - fr
       responses:
-        200:
-          $ref: '#/components/responses/200'
+        201:
+          description: Data fix successfully created.
+          headers:
+            RateLimit-Limit:
+              schema:
+                type: integer
+              description: Request limit per minute.
+              example: 5
+            RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of requests left for the time window.
+              example: 2
+            RateLimit-Reset:
+              schema:
+                type: integer
+              description: Indicates how many seconds are left to wait before making a follow-up request. 
+              example: 34
+            Retry-After:
+              schema: 
+                type: integer
+              description: Indicates how many seconds to wait before making a follow-up request.
+              example: 60
         401:
           $ref: '#/components/responses/401'
         403:
           $ref: '#/components/responses/403'
         404:
-          $ref: '#/components/responses/404'
+          description: The provided `origin` entity could not be found
         412:
           $ref: '#/components/responses/412'
         422:
