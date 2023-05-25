@@ -153,11 +153,11 @@ paths:
                       type: string
                       default: all
                       description: Select data fixes with the corresponding status.
-                      example: validated
+                      example: approved
                       enum:
                       - all
                       - pending
-                      - validated
+                      - approved
                 - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
       responses:
@@ -181,7 +181,7 @@ paths:
         To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
         You must also provide at least one of the property you want to modify in `update`.
 
-        If you want your data fixes to be immediately available to your end-users, set the property `status` to `validated`.\
+        If you want your data fixes to be immediately available to your end-users, set the property `status` to `approved`.\
         Otherwise, the data fix will be marked as `pending` and will require the app owner to validate it first via the Dashboard or the API.
       tags: [ Live Patching ]
       requestBody:
@@ -217,11 +217,11 @@ paths:
                   description: |
                     Status of the current data fix.\
                     `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
-                    `validated`: data fix will immediately be available to end-users.
+                    `approved`: data fix will immediately be available to end-users.
                   example: pending
                   enum:
                   - pending
-                  - validated
+                  - approved
                 language:
                   type: string
                   description: |
