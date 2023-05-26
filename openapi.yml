@@ -132,6 +132,43 @@ paths:
           $ref: code_samples/ruby/reverse.rb
       x-codegen-request-body-name: payload
   /patch:
+    get: 
+      summary: Retrieve data fixes
+      description: |
+        Get all data fixes associated to the current app.
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf: 
+                - $ref: '#/components/schemas/parameters.status'
+                - type: object
+                  properties:
+                    maxResults:
+                      type: integer
+                      description: Maximum number of results to return.
+                      default: 5
+                      minimum: 1
+                      maximum: 20
+      responses:
+        200:
+          $ref: '#/components/responses/200'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
     post:
       summary: Retrieve data fixes
       description: |
