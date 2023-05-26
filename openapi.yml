@@ -307,6 +307,72 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
+    delete:
+      summary: Delete a data fix
+      description: |
+        To delete a data fix, you must provide the exact entity you want to delete as the `origin` object.
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                -  origin
+              properties: 
+                origin:
+                  required: 
+                    - name
+                    - city
+                    - county
+                    - administrative
+                    - country
+                    - countrycode
+                    - zipcode
+                    - population
+                    - lat
+                    - lng
+                    - type
+                  allOf: 
+                    - $ref: '#/components/schemas/entity'
+      responses:
+        204:
+          description: Data fix successfully deleted.
+          headers:
+            RateLimit-Limit:
+              schema:
+                type: integer
+              description: Request limit per minute.
+              example: 5
+            RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of requests left for the time window.
+              example: 2
+            RateLimit-Reset:
+              schema:
+                type: integer
+              description: Indicates how many seconds are left to wait before making a follow-up request. 
+              example: 34
+            Retry-After:
+              schema: 
+                type: integer
+              description: Indicates how many seconds to wait before making a follow-up request.
+              example: 60
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided `origin` entity could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
 components:
   schemas:
     parameters:
