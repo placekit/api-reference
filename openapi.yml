@@ -441,6 +441,17 @@ components:
           description: Search query terms.
           example: 42 avenue Champs Elysees Paris
           default: ''
+    parameters.status:
+      properties:
+        status:
+          type: string
+          default: all
+          description: Filter data fixes with the corresponding status.
+          example: approved
+          enum:
+          - all
+          - pending
+          - approved
     entity:
       type: object
       properties:
