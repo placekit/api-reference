@@ -22,7 +22,9 @@ tags:
       API clients are simple wrappers on top of this API.
   - name: Live Patching
     description: |
-      PlaceKit Live Patching enables users to create a data validation flow in order to fix error or add new addresses, chose your validation flow and instantly publish it for your end-users.
+      PlaceKit Live Patching enables users to create a data validation flow in order to fix error or add new addresses, chose your validation flow and instantly publish it for your end-users.\
+
+      **Required**: A `private`` API key is required to use Live Patching endpoints.
 paths:
   /search:
     post:
@@ -156,7 +158,7 @@ paths:
                       maximum: 20
       responses:
         200:
-          $ref: '#/components/responses/200'
+          $ref: '#/components/responses/200.patch'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -199,7 +201,7 @@ paths:
                 - $ref: '#/components/schemas/parameters'
       responses:
         200:
-          $ref: '#/components/responses/200'
+          $ref: '#/components/responses/200.patch'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -273,28 +275,7 @@ paths:
                   - fr
       responses:
         201:
-          description: Data fix successfully created.
-          headers:
-            RateLimit-Limit:
-              schema:
-                type: integer
-              description: Request limit per minute.
-              example: 5
-            RateLimit-Remaining:
-              schema:
-                type: integer
-              description: The number of requests left for the time window.
-              example: 2
-            RateLimit-Reset:
-              schema:
-                type: integer
-              description: Indicates how many seconds are left to wait before making a follow-up request. 
-              example: 34
-            Retry-After:
-              schema: 
-                type: integer
-              description: Indicates how many seconds to wait before making a follow-up request.
-              example: 60
+          $ref: '#/components/responses/201'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -339,28 +320,7 @@ paths:
                     - $ref: '#/components/schemas/entity'
       responses:
         204:
-          description: Data fix successfully deleted.
-          headers:
-            RateLimit-Limit:
-              schema:
-                type: integer
-              description: Request limit per minute.
-              example: 5
-            RateLimit-Remaining:
-              schema:
-                type: integer
-              description: The number of requests left for the time window.
-              example: 2
-            RateLimit-Reset:
-              schema:
-                type: integer
-              description: Indicates how many seconds are left to wait before making a follow-up request. 
-              example: 34
-            Retry-After:
-              schema: 
-                type: integer
-              description: Indicates how many seconds to wait before making a follow-up request.
-              example: 60
+          $ref: '#/components/responses/204'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -512,6 +472,13 @@ components:
           - tourism
           - townhall
           - train
+    results.query:
+      type: object
+      properties: 
+        query:
+          type: string
+          description: Search text query used for this response.
+          example: '42 avenue Champs Elysees Paris'
     results:
       type: object
       properties:
@@ -534,10 +501,6 @@ components:
           type: integer
           description: Maximum number of results items returned.
           example: 5
-        query:
-          type: string
-          description: Search text query used for this response.
-          example: '42 avenue Champs Elysees Paris'
     types:
       type: string
       enum:
@@ -595,7 +558,83 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/results'
+            allOf: 
+              - $ref: '#/components/schemas/results'
+              - $ref: '#/components/schemas/results.query'
+    200.patch:
+      description: Returns a list of matching entities
+      headers:
+        RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per minute.
+          example: 5
+        RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of requests left for the time window.
+          example: 2
+        RateLimit-Reset:
+          schema:
+            type: integer
+          description: Indicates how many seconds are left to wait before making a follow-up request. 
+          example: 34
+        Retry-After:
+          schema: 
+            type: integer
+          description: Indicates how many seconds to wait before making a follow-up request.
+          example: 60
+      content:
+        application/json:
+          schema:
+            allOf: 
+              - $ref: '#/components/schemas/results'
+    201:
+      description: Data fix successfully created
+      headers:
+        RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per minute.
+          example: 5
+        RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of requests left for the time window.
+          example: 2
+        RateLimit-Reset:
+          schema:
+            type: integer
+          description: Indicates how many seconds are left to wait before making a follow-up request. 
+          example: 34
+        Retry-After:
+          schema: 
+            type: integer
+          description: Indicates how many seconds to wait before making a follow-up request.
+          example: 60
+    204:
+      description: Data fix successfully deleted
+      headers:
+        RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per minute.
+          example: 5
+        RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of requests left for the time window.
+          example: 2
+        RateLimit-Reset:
+          schema:
+            type: integer
+          description: Indicates how many seconds are left to wait before making a follow-up request. 
+          example: 34
+        Retry-After:
+          schema: 
+            type: integer
+          description: Indicates how many seconds to wait before making a follow-up request.
+          example: 60
     401:
       description: Access denied authentication failed
       content:
