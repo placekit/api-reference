@@ -199,6 +199,20 @@ paths:
                       - approved
                 - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
+            examples:
+              status:
+                summary: Filter by status
+                description: Filter by `pending` data fixes
+                value:
+                  status: pending
+              query:
+                summary: Advanced filtering
+                value:
+                  status: approved
+                  query: London
+                  types: ['city']
+                  countries: ['fr', 'gb']
+                  maxResults: 20
       responses:
         200:
           $ref: '#/components/responses/200.patch'
@@ -273,6 +287,27 @@ paths:
                   enum:
                   - en
                   - fr
+            examples:
+              datafix:
+                summary: create
+                description: create
+                value:
+                  origin:
+                    name: Avenue des Champs Élysées
+                    city: Paris 8e Arrondissement
+                    county: Paris
+                    administrative: Île-de-France
+                    country: France
+                    countrycode: fr
+                    zipcode: ['75008']
+                    population: 2220445
+                    lat: 48.871086
+                    lng: 2.3036339
+                    type: street
+                  update:
+                    name: rue des Nouveaux Champs Élysées
+                    zipcode: ['75020']
+                  status: pending
       responses:
         201:
           $ref: '#/components/responses/201'
