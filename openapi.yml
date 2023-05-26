@@ -228,6 +228,9 @@ paths:
           application/json:
             schema:
               type: object
+              required: 
+                - origin
+                - update
               properties: 
                 origin:
                   required: 
@@ -242,10 +245,10 @@ paths:
                     - lat
                     - lng
                     - type
-                  $ref: '#/components/schemas/entity'
+                  allOf: 
+                    -  $ref: '#/components/schemas/entity'
                 update:
-                  description: |
-                    At least one property is necessary.
+                  description: At least one property is necessary.
                   minProperties: 1 
                   $ref: '#/components/schemas/entity'
                 status:
