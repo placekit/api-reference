@@ -142,7 +142,7 @@ paths:
         You can refine the results by using the same parameters as the regular `/search` endpoint.
       tags: [ Live Patching ]
       requestBody:
-        description: Request parameters
+        description: Request parameters (optional)
         required: false
         content:
           application/json:
@@ -254,8 +254,8 @@ paths:
                   - fr
             examples:
               datafix:
-                summary: create
-                description: create
+                summary: Create a data fix
+                description: Create a data fix
                 value:
                   origin:
                     name: Avenue des Champs Élysées
@@ -345,6 +345,16 @@ paths:
                   enum:
                   - en
                   - fr
+            examples:
+              status:
+                summary: Update data fix status
+                value:
+                  status: approved
+              datafix:
+                summary: Update data fix property
+                value:
+                  update:
+                    name: Rue des Nouveaux Champs Élysées
       responses: 
         204:
           $ref: '#/components/responses/204'
@@ -529,7 +539,7 @@ components:
       properties:
         id:
           type: string
-          description: Patch identifier.
+          description: Data fix identifier.
           example: c9ce0be25ff6a74405c8cfa040e5ba1f
     results:
       type: object
