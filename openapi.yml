@@ -289,17 +289,82 @@ paths:
         429:
           $ref: '#/components/responses/429'
   /patch/{id}:
+    get:
+      summary: Get a data fix
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+      responses: 
+        200:
+          $ref: '#/components/responses/200.patch'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided data fix `id` could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    patch: 
+      summary: Edit a data fix
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                update:
+                  description: At least one property is necessary.
+                  minProperties: 1 
+                  $ref: '#/components/schemas/entity'
+                status:
+                  type: string
+                  description: |
+                    Status of the current data fix.\
+                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
+                    `approved`: data fix will immediately be available to end-users.
+                  example: pending
+                  enum:
+                  - pending
+                  - approved
+                language:
+                  type: string
+                  description: |
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Specify the language in which the data fix is written.
+                  example: fr
+                  enum:
+                  - en
+                  - fr
+      responses: 
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided data fix `id` could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
     delete:
       summary: Delete a data fix
       tags: [ Live Patching ]
       parameters: 
-        - name: id
-          in: path
-          required: true
-          description: Data fix identifier
-          schema: 
-            type: string
-            format: md5
+        - $ref: '#/components/parameters/patch.id'
       responses:
         204:
           $ref: '#/components/responses/204'
@@ -308,7 +373,7 @@ paths:
         403:
           $ref: '#/components/responses/403'
         404:
-          description: The provided `origin` entity could not be found
+          description: The provided data fix `id` could not be found
         412:
           $ref: '#/components/responses/412'
         422:
@@ -316,6 +381,15 @@ paths:
         429:
           $ref: '#/components/responses/429'
 components:
+  parameters: 
+    patch.id:
+      name: id
+      in: path
+      required: true
+      schema: 
+        type: string
+        description: Data fix identifier
+        format: md5
   schemas:
     parameters:
       type: object
