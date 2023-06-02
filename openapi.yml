@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.0.0
+  version: 1.1.0
 servers:
 - url: https://api.placekit.co
 security:
