@@ -137,7 +137,7 @@ paths:
     post:
       summary: Retrieve data fixes
       description: |
-        Get all data fixes associated to the current app.\
+        Get all data fixes associated to the current app.
 
         You can refine the results by using the same parameters as the regular `/search` endpoint.
       tags: [ Live Patching ]
@@ -288,36 +288,18 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
+  /patch/{id}:
     delete:
       summary: Delete a data fix
-      description: |
-        To delete a data fix, you must provide the exact entity you want to delete as the `origin` object.
       tags: [ Live Patching ]
-      requestBody:
-        description: Request parameters
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: 
-                -  origin
-              properties: 
-                origin:
-                  required: 
-                    - name
-                    - city
-                    - county
-                    - administrative
-                    - country
-                    - countrycode
-                    - zipcode
-                    - population
-                    - lat
-                    - lng
-                    - type
-                  allOf: 
-                    - $ref: '#/components/schemas/entity'
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Data fix identifier
+          schema: 
+            type: string
+            format: md5
       responses:
         204:
           $ref: '#/components/responses/204'
