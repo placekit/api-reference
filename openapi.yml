@@ -133,7 +133,7 @@ paths:
         source:
           $ref: code_samples/ruby/reverse.rb
       x-codegen-request-body-name: payload
-  /patch:
+  /patch/search:
     post:
       summary: Retrieve data fixes
       description: |
@@ -179,7 +179,7 @@ paths:
                   maxResults: 20
       responses:
         200:
-          $ref: '#/components/responses/200.patch'
+          $ref: '#/components/responses/200.patch.search'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -192,7 +192,8 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
-    put:
+  /patch:
+    post:
       summary: Create a data fix
       description: |
         To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
@@ -273,8 +274,8 @@ paths:
                     zipcode: ['75020']
                   status: pending
       responses:
-        201:
-          $ref: '#/components/responses/201'
+        200:
+          $ref: '#/components/responses/200.patch'
         401:
           $ref: '#/components/responses/401'
         403:
@@ -467,6 +468,13 @@ components:
           - tourism
           - townhall
           - train
+    entity.id:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Patch identifier.
+          example: c9ce0be25ff6a74405c8cfa040e5ba1f
     results:
       type: object
       properties:
@@ -571,28 +579,15 @@ components:
               - $ref: '#/components/schemas/results'
               - $ref: '#/components/schemas/results.query'
     200.patch:
+      description: Data fix successfully created
+      content:
+        application/json:
+          schema:
+            allOf: 
+              - $ref: '#/components/schemas/entity.id'
+              - $ref: '#/components/schemas/entity'
+    200.patch.search:
       description: Returns a list of matching entities
-      headers:
-        RateLimit-Limit:
-          schema:
-            type: integer
-          description: Request limit per minute.
-          example: 5
-        RateLimit-Remaining:
-          schema:
-            type: integer
-          description: The number of requests left for the time window.
-          example: 2
-        RateLimit-Reset:
-          schema:
-            type: integer
-          description: Indicates how many seconds are left to wait before making a follow-up request. 
-          example: 34
-        Retry-After:
-          schema: 
-            type: integer
-          description: Indicates how many seconds to wait before making a follow-up request.
-          example: 60
       content:
         application/json:
           schema:
@@ -600,52 +595,8 @@ components:
               - $ref: '#/components/schemas/results'
               - $ref: '#/components/schemas/results.offset'
               - $ref: '#/components/schemas/results.totalResults'
-    201:
-      description: Data fix successfully created
-      headers:
-        RateLimit-Limit:
-          schema:
-            type: integer
-          description: Request limit per minute.
-          example: 5
-        RateLimit-Remaining:
-          schema:
-            type: integer
-          description: The number of requests left for the time window.
-          example: 2
-        RateLimit-Reset:
-          schema:
-            type: integer
-          description: Indicates how many seconds are left to wait before making a follow-up request. 
-          example: 34
-        Retry-After:
-          schema: 
-            type: integer
-          description: Indicates how many seconds to wait before making a follow-up request.
-          example: 60
     204:
       description: Data fix successfully deleted
-      headers:
-        RateLimit-Limit:
-          schema:
-            type: integer
-          description: Request limit per minute.
-          example: 5
-        RateLimit-Remaining:
-          schema:
-            type: integer
-          description: The number of requests left for the time window.
-          example: 2
-        RateLimit-Reset:
-          schema:
-            type: integer
-          description: Indicates how many seconds are left to wait before making a follow-up request. 
-          example: 34
-        Retry-After:
-          schema: 
-            type: integer
-          description: Indicates how many seconds to wait before making a follow-up request.
-          example: 60
     401:
       description: Access denied authentication failed
       content:
