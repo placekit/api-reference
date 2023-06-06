@@ -429,7 +429,8 @@ components:
           description: |
             Select the types of record to return.\
             Prepend with `-` to omit a type.\
-            Returns all types by default.
+            Returns all types by default.\
+            > Note: when the only type selected is `country`, `countries` parameter is optional.
           items:
             $ref: '#/components/schemas/types'
         maxResults:
