@@ -542,6 +542,13 @@ components:
           type: string
           description: Data fix identifier.
           example: c9ce0be25ff6a74405c8cfa040e5ba1f
+    entity.status:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Data fix status.
+          example: pending
     results:
       type: object
       properties:
@@ -652,6 +659,7 @@ components:
           schema:
             allOf: 
               - $ref: '#/components/schemas/entity.id'
+              - $ref: '#/components/schemas/entity.status'
               - $ref: '#/components/schemas/entity'
     200.patch.search:
       description: Returns a list of matching entities
