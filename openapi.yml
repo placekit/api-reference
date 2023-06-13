@@ -35,7 +35,7 @@ paths:
         It will return results around `coordinates` (if provided) and the best matching textual relevance.
 
         **It is highly recommended** to set the `countries` parameter with the country you need results from for the best accuracy and revelance possible.
-      operationId: search
+      operationId: ForwardGeocoding
       tags: [ Geocoding ]
       requestBody:
         description: Request parameters
@@ -88,7 +88,7 @@ paths:
 
         It will return the closest results around `coordinates`.\
         If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
-      operationId: reverse
+      operationId: ReverseGeocoding
       tags: [ Geocoding ]
       requestBody:
         description: Request parameters
@@ -140,6 +140,7 @@ paths:
         Get all data fixes associated to the current app.
 
         You can refine the results by using the same parameters as the regular `/search` endpoint.
+      operationId: SearchPatches
       tags: [ Live Patching ]
       requestBody:
         description: Request parameters (optional)
@@ -194,13 +195,14 @@ paths:
           $ref: '#/components/responses/429'
   /patch:
     put:
-      summary: Create a data fix
+      summary: Create or update a data fix
       description: |
         To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
         You must also provide at least one of the property you want to modify in `update`.
 
         If you want your data fixes to be immediately available to your end-users, set the property `status` to `approved`.\
         Otherwise, the data fix will be marked as `pending` and will require the app owner to validate it first via the Dashboard or the API.
+      operationId: UpsertPatch
       tags: [ Live Patching ]
       requestBody:
         description: Request parameters
@@ -291,6 +293,7 @@ paths:
   /patch/{id}:
     get:
       summary: Get a data fix
+      operationId: GetPatch
       tags: [ Live Patching ]
       parameters: 
         - $ref: '#/components/parameters/patch.id'
@@ -311,6 +314,7 @@ paths:
           $ref: '#/components/responses/429'
     patch: 
       summary: Edit a data fix
+      operationId: UpdatePatch
       tags: [ Live Patching ]
       parameters: 
         - $ref: '#/components/parameters/patch.id'
@@ -372,6 +376,7 @@ paths:
           $ref: '#/components/responses/429'
     delete:
       summary: Delete a data fix
+      operationId: DeletePatch
       tags: [ Live Patching ]
       parameters: 
         - $ref: '#/components/parameters/patch.id'
@@ -396,9 +401,9 @@ components:
       name: id
       in: path
       required: true
+      description: Data fix identifier
       schema: 
         type: string
-        description: Data fix identifier
         format: md5
   schemas:
     parameters:
