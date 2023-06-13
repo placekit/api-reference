@@ -458,6 +458,7 @@ components:
             Returned results will be coming from the user's country's IP.\
             If set to `true`, the parameter `countries` acts as a fallback.
     parameters.countryByIP:
+      type: object
       properties: 
         countryByIP:
           type: boolean
@@ -467,6 +468,7 @@ components:
             Returned results will be coming from the user's country's IP.\
             If set to `true`, the parameter `countries` acts as a fallback.
     parameters.offset:
+      type: object
       properties:
         offset:
           type: integer
@@ -474,6 +476,7 @@ components:
           default: 0
           minimum: 0
     parameters.query:
+      type: object
       properties:
         query:
           type: string
