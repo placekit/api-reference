@@ -193,7 +193,7 @@ paths:
         429:
           $ref: '#/components/responses/429'
   /patch:
-    post:
+    put:
       summary: Create a data fix
       description: |
         To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
