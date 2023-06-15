@@ -66,19 +66,19 @@ paths:
       x-codeSamples:
       - lang: curl
         source:
-          $ref: code_samples/curl/search.sh
+          $ref: './code_samples/curl/search.yaml#/source'
       - lang: go
         source:
-          $ref: code_samples/go/search.go
+          $ref: './code_samples/go/search.yaml#/source'
       - lang: js
         source:
-          $ref: code_samples/js/search.js
+          $ref: './code_samples/js/search.yaml#/source'
       - lang: python
         source:
-          $ref: code_samples/python/search.py
+          $ref: './code_samples/python/search.yaml#/source'
       - lang: ruby
         source:
-          $ref: code_samples/ruby/search.rb
+          $ref: './code_samples/ruby/search.yaml#/source'
       x-codegen-request-body-name: payload
   /reverse:
     post:
@@ -119,19 +119,19 @@ paths:
       x-codeSamples:
       - lang: curl
         source:
-          $ref: code_samples/curl/reverse.sh
+          $ref: './code_samples/curl/reverse.yaml#/source'
       - lang: go
         source:
-          $ref: code_samples/go/reverse.go
+          $ref: './code_samples/go/reverse.yaml#/source'
       - lang: js
         source:
-          $ref: code_samples/js/reverse.js
+          $ref: './code_samples/js/reverse.yaml#/source'
       - lang: python
         source:
-          $ref: code_samples/python/reverse.py
+          $ref: './code_samples/python/reverse.yaml#/source'
       - lang: ruby
         source:
-          $ref: code_samples/ruby/reverse.rb
+          $ref: './code_samples/ruby/reverse.yaml#/source'
       x-codegen-request-body-name: payload
   /patch/search:
     post:
