@@ -10,16 +10,26 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.0.0
+  version: 1.1.0
 servers:
 - url: https://api.placekit.co
 security:
 - api_key: []
 tags: 
-  - name: PlaceKit API
+  - name: Geocoding
     description: |
-      PlaceKit API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
+      PlaceKit Geocoding API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
       API clients are simple wrappers on top of this API.
+  - name: Live Patching
+    x-displayName: Live Patching (unstable)
+    description: |
+      ![Unstable](https://img.shields.io/badge/Status-Unstable-red)
+
+      ⚠️ **This API is unstable and likely to change** ⚠️
+
+      PlaceKit Live Patching enables users to create a data validation flow in order to fix error or add new addresses, chose your validation flow and instantly publish it for your end-users.
+
+      **Required**: A `private` API key is required to use Live Patching endpoints.
 paths:
   /search:
     post:
@@ -30,22 +40,18 @@ paths:
         It will return results around `coordinates` (if provided) and the best matching textual relevance.
 
         **It is highly recommended** to set the `countries` parameter with the country you need results from for the best accuracy and revelance possible.
-      operationId: search
-      tags: [ PlaceKit API ]
+      operationId: ForwardGeocoding
+      tags: [ Geocoding ]
       requestBody:
         description: Request parameters
         required: false
         content:
           application/json:
             schema:
+              required: 
+                - countries
               allOf:
-                - type: object
-                  properties:
-                    query:
-                      type: string
-                      description: Search query terms.
-                      example: 42 avenue Champs Elysees Paris
-                      default: ''
+                - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
       responses:
         200:
@@ -65,19 +71,19 @@ paths:
       x-codeSamples:
       - lang: curl
         source:
-          $ref: code_samples/curl/search.sh
+          $ref: './code_samples/curl/search.yaml#/source'
       - lang: go
         source:
-          $ref: code_samples/go/search.go
+          $ref: './code_samples/go/search.yaml#/source'
       - lang: js
         source:
-          $ref: code_samples/js/search.js
+          $ref: './code_samples/js/search.yaml#/source'
       - lang: python
         source:
-          $ref: code_samples/python/search.py
+          $ref: './code_samples/python/search.yaml#/source'
       - lang: ruby
         source:
-          $ref: code_samples/ruby/search.rb
+          $ref: './code_samples/ruby/search.yaml#/source'
       x-codegen-request-body-name: payload
   /reverse:
     post:
@@ -87,25 +93,19 @@ paths:
 
         It will return the closest results around `coordinates`.\
         If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
-      operationId: reverse
-      tags: [ PlaceKit API ]
+      operationId: ReverseGeocoding
+      tags: [ Geocoding ]
       requestBody:
         description: Request parameters
         required: false
         content:
           application/json:
             schema:
+              required: 
+                - countries
               allOf: 
                 - $ref: '#/components/schemas/parameters'
-                - type: object
-                  properties:
-                    countryByIP:
-                      type: boolean
-                      default: true
-                      description: |
-                        Automatically select the country to search in via the user IP's detected location.\
-                        Returned results will be coming from the user's country's IP.\
-                        If set to `true`, the parameter `countries` acts as a fallback.
+                - $ref: '#/components/schemas/parameters.countryByIP'
       responses:
         200:
           $ref: '#/components/responses/200'
@@ -124,21 +124,292 @@ paths:
       x-codeSamples:
       - lang: curl
         source:
-          $ref: code_samples/curl/reverse.sh
+          $ref: './code_samples/curl/reverse.yaml#/source'
       - lang: go
         source:
-          $ref: code_samples/go/reverse.go
+          $ref: './code_samples/go/reverse.yaml#/source'
       - lang: js
         source:
-          $ref: code_samples/js/reverse.js
+          $ref: './code_samples/js/reverse.yaml#/source'
       - lang: python
         source:
-          $ref: code_samples/python/reverse.py
+          $ref: './code_samples/python/reverse.yaml#/source'
       - lang: ruby
         source:
-          $ref: code_samples/ruby/reverse.rb
+          $ref: './code_samples/ruby/reverse.yaml#/source'
       x-codegen-request-body-name: payload
+  /patch/search:
+    post:
+      summary: Retrieve data fixes
+      description: |
+        Get all data fixes associated to the current app.
+
+        You can refine the results by using the same parameters as the regular `/search` endpoint.
+      operationId: SearchPatches
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters (optional)
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf: 
+                - type: object
+                  properties:
+                    status:
+                      type: string
+                      default: all
+                      description: Select data fixes with the corresponding status.
+                      example: approved
+                      enum:
+                      - all
+                      - pending
+                      - approved
+                - $ref: '#/components/schemas/parameters.query'
+                - $ref: '#/components/schemas/parameters'
+                - $ref: '#/components/schemas/parameters.offset'
+            examples:
+              status:
+                summary: Filter by status
+                description: Filter by `pending` data fixes
+                value:
+                  status: pending
+              query:
+                summary: Advanced filtering
+                value:
+                  status: approved
+                  query: London
+                  types: ['city']
+                  countries: ['fr', 'gb']
+                  maxResults: 20
+      responses:
+        200:
+          $ref: '#/components/responses/200.patch.search'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+  /patch:
+    put:
+      summary: Create or update a data fix
+      description: |
+        To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
+        You must also provide at least one of the property you want to modify in `update`.
+
+        If you want your data fixes to be immediately available to your end-users, set the property `status` to `approved`.\
+        Otherwise, the data fix will be marked as `pending` and will require the app owner to validate it first via the Dashboard or the API.
+      operationId: UpsertPatch
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - origin
+                - update
+              properties: 
+                origin:
+                  required: 
+                    - name
+                    - city
+                    - county
+                    - administrative
+                    - country
+                    - countrycode
+                    - zipcode
+                    - population
+                    - lat
+                    - lng
+                    - type
+                  allOf: 
+                    -  $ref: '#/components/schemas/entity'
+                update:
+                  description: At least one property is necessary.
+                  minProperties: 1 
+                  $ref: '#/components/schemas/entity'
+                status:
+                  type: string
+                  default: pending
+                  description: |
+                    Status of the current data fix.\
+                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
+                    `approved`: data fix will immediately be available to end-users.
+                  example: pending
+                  enum:
+                  - pending
+                  - approved
+                language:
+                  type: string
+                  description: |
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Specify the language in which the data fix is written.
+                  example: fr
+                  enum:
+                  - en
+                  - fr
+            examples:
+              datafix:
+                summary: Create a data fix
+                description: Create a data fix
+                value:
+                  origin:
+                    name: Avenue des Champs Élysées
+                    city: Paris 8e Arrondissement
+                    county: Paris
+                    administrative: Île-de-France
+                    country: France
+                    countrycode: fr
+                    zipcode: ['75008']
+                    population: 2220445
+                    lat: 48.871086
+                    lng: 2.3036339
+                    type: street
+                  update:
+                    name: rue des Nouveaux Champs Élysées
+                    zipcode: ['75020']
+                  status: pending
+      responses:
+        200:
+          $ref: '#/components/responses/200.patch'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided `origin` entity could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+  /patch/{id}:
+    get:
+      summary: Get a data fix
+      operationId: GetPatch
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+      responses: 
+        200:
+          $ref: '#/components/responses/200.patch'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided data fix `id` could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    patch: 
+      summary: Edit a data fix
+      operationId: UpdatePatch
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                update:
+                  description: At least one property is necessary.
+                  minProperties: 1 
+                  $ref: '#/components/schemas/entity'
+                status:
+                  type: string
+                  description: |
+                    Status of the current data fix.\
+                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
+                    `approved`: data fix will immediately be available to end-users.
+                  example: pending
+                  enum:
+                  - pending
+                  - approved
+                language:
+                  type: string
+                  description: |
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Specify the language in which the data fix is written.
+                  example: fr
+                  enum:
+                  - en
+                  - fr
+            examples:
+              status:
+                summary: Update data fix status
+                value:
+                  status: approved
+              datafix:
+                summary: Update data fix property
+                value:
+                  update:
+                    name: Rue des Nouveaux Champs Élysées
+      responses: 
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided data fix `id` could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    delete:
+      summary: Delete a data fix
+      operationId: DeletePatch
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+      responses:
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided data fix `id` could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
 components:
+  parameters: 
+    patch.id:
+      name: id
+      in: path
+      required: true
+      description: Data fix identifier
+      schema: 
+        type: string
+        format: md5
   schemas:
     parameters:
       type: object
@@ -168,7 +439,8 @@ components:
           description: |
             Select the types of record to return.\
             Prepend with `-` to omit a type.\
-            Returns all types by default.
+            Returns all types by default.\
+            > Note: when the only type selected is `country`, `countries` parameter is optional.
           items:
             $ref: '#/components/schemas/types'
         maxResults:
@@ -190,6 +462,32 @@ components:
             Automatically select the country to search in via the user IP's detected location.\
             Returned results will be coming from the user's country's IP.\
             If set to `true`, the parameter `countries` acts as a fallback.
+    parameters.countryByIP:
+      type: object
+      properties: 
+        countryByIP:
+          type: boolean
+          default: true
+          description: |
+            Automatically select the country to search in via the user IP's detected location.\
+            Returned results will be coming from the user's country's IP.\
+            If set to `true`, the parameter `countries` acts as a fallback.
+    parameters.offset:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: Get paginated results starting from the offset.
+          default: 0
+          minimum: 0
+    parameters.query:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query terms.
+          example: 42 avenue Champs Elysees Paris
+          default: ''
     entity:
       type: object
       properties:
@@ -197,10 +495,6 @@ components:
           type: string
           description: Name of the current entity.
           example: 42 Avenue des Champs Élysées
-        highlight:
-          type: string
-          description: Name of the current entity with highlighted matched words.
-          example: <mark>42 Avenue</mark> des <mark>Champs Élysées</mark>
         city:
           type: string
           description: City name.
@@ -235,11 +529,11 @@ components:
           example: 2220445
         lat:
           type: number
-          description: Latitude.
+          description: Latitude value between `-90` and `90`.
           example: 48.871086
         lng:
           type: number
-          description: Longitude.
+          description: Longitude value between `-180` and `180`.
           example: 2.3036339
         type:
           type: string
@@ -254,13 +548,34 @@ components:
           - tourism
           - townhall
           - train
+    entity.id:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Data fix identifier.
+          example: c9ce0be25ff6a74405c8cfa040e5ba1f
+    entity.status:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Data fix status.
+          example: pending
     results:
       type: object
       properties:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/entity'
+            allOf: 
+              - type: object
+                properties:
+                  highlight:
+                    type: string
+                    description: Name of the current entity with highlighted matched words.
+                    example: <mark>42 Avenue</mark> des <mark>Champs Élysées</mark> 
+              - $ref: '#/components/schemas/entity'
         resultsCount:
           type: integer
           description: Number of items results found.
@@ -269,10 +584,27 @@ components:
           type: integer
           description: Maximum number of results items returned.
           example: 5
+    results.query:
+      type: object
+      properties: 
         query:
           type: string
           description: Search text query used for this response.
           example: '42 avenue Champs Elysees Paris'
+    results.offset:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: Offset used for this paginated response.
+          example: 0
+    results.totalResults:
+      type: object
+      properties:
+        totalResults:
+          type: integer
+          description: The total number of available items.
+          example: 2
     types:
       type: string
       enum:
@@ -305,7 +637,7 @@ components:
           type: string
   responses:
     200:
-      description: Returns a list of matching addresses
+      description: Returns a list of matching entities
       headers:
         RateLimit-Limit:
           schema:
@@ -330,7 +662,29 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/results'
+            allOf: 
+              - $ref: '#/components/schemas/results'
+              - $ref: '#/components/schemas/results.query'
+    200.patch:
+      description: Data fix successfully created
+      content:
+        application/json:
+          schema:
+            allOf: 
+              - $ref: '#/components/schemas/entity.id'
+              - $ref: '#/components/schemas/entity.status'
+              - $ref: '#/components/schemas/entity'
+    200.patch.search:
+      description: Returns a list of matching entities
+      content:
+        application/json:
+          schema:
+            allOf: 
+              - $ref: '#/components/schemas/results'
+              - $ref: '#/components/schemas/results.offset'
+              - $ref: '#/components/schemas/results.totalResults'
+    204:
+      description: Data fix successfully deleted
     401:
       description: Access denied authentication failed
       content:
