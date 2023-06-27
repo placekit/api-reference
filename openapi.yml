@@ -255,10 +255,7 @@ paths:
                   description: |
                     [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
                     Specify the language in which the data fix is written.
-                  example: fr
-                  enum:
-                  - en
-                  - fr
+                  example: en
             examples:
               datafix:
                 summary: Create a data fix
@@ -350,10 +347,7 @@ paths:
                   description: |
                     [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
                     Specify the language in which the data fix is written.
-                  example: fr
-                  enum:
-                  - en
-                  - fr
+                  example: en
             examples:
               status:
                 summary: Update data fix status
@@ -428,18 +422,14 @@ components:
           description: |
             [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
             Default results are in their original language.\
-            By setting this parameter, you can change the language of the results, if the translation is available.\
-            Contact us if you need other languages.
-          example: fr
-          enum:
-          - en
-          - fr
+            By setting this parameter, you can change the language of the results, _if_ the translation is available.
+          example: en
         types:
           type: array
           description: |
             Select the types of record to return.\
             Prepend with `-` to omit a type.\
-            Returns all types by default.\
+            Returns all types by default.
             > Note: when the only type selected is `country`, `countries` parameter is optional.
           items:
             $ref: '#/components/schemas/types'
