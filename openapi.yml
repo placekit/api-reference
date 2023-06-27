@@ -671,6 +671,7 @@ components:
               - $ref: '#/components/schemas/results'
               - $ref: '#/components/schemas/results.offset'
               - $ref: '#/components/schemas/results.totalResults'
+              - $ref: '#/components/schemas/results.query'
     204:
       description: Data fix successfully deleted
     401:
