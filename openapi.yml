@@ -228,8 +228,7 @@ paths:
                     - countrycode
                     - zipcode
                     - population
-                    - lat
-                    - lng
+                    - coordinates
                     - type
                   allOf: 
                     -  $ref: '#/components/schemas/entity'
@@ -268,8 +267,7 @@ paths:
                     countrycode: fr
                     zipcode: ['75008']
                     population: 2220445
-                    lat: 48.871086
-                    lng: 2.3036339
+                    coordinates: 48.871086, 2.3036339
                     type: street
                   update:
                     name: rue des Nouveaux Champs Élysées
@@ -516,13 +514,23 @@ components:
           description: Population number of the entity city.
           example: 2220445
         lat:
+          deprecated: true
           type: number
-          description: Latitude value between `-90` and `90`.
+          description: |
+            Latitude value between `-90` and `90`.\
+            **Use `coordinates` instead.**
           example: 48.871086
         lng:
+          deprecated: true
           type: number
-          description: Longitude value between `-180` and `180`.
+          description: |
+            Longitude value between `-180` and `180`.\
+            **Use `coordinates` instead.**
           example: 2.3036339
+        coordinates:
+          type: string
+          description: GPS coordinates latitude and longitude of the current entity.
+          example: 48.871086, 2.3036339
         type:
           type: string
           description: Type of the entity.
