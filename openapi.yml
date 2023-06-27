@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.1.0
+  version: 1.1.1
 servers:
 - url: https://api.placekit.co
 security:
@@ -21,15 +21,10 @@ tags:
       PlaceKit Geocoding API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
       API clients are simple wrappers on top of this API.
   - name: Live Patching
-    x-displayName: Live Patching (unstable)
     description: |
-      ![Unstable](https://img.shields.io/badge/Status-Unstable-red)
+      PlaceKit Live Patching feature enables users to create a data validation flow to fix data errors or add new addresses to their catalog, chose their validation flow and instantly publish it to their end-users.
 
-      ⚠️ **This API is unstable and likely to change** ⚠️
-
-      PlaceKit Live Patching enables users to create a data validation flow in order to fix error or add new addresses, chose your validation flow and instantly publish it for your end-users.
-
-      **Required**: A `private` API key is required to use Live Patching endpoints.
+      A `private` API key is **required** to use Live Patching endpoints.
 paths:
   /search:
     post:
@@ -140,9 +135,9 @@ paths:
       x-codegen-request-body-name: payload
   /patch/search:
     post:
-      summary: Retrieve data fixes
+      summary: List patch records
       description: |
-        Get all data fixes associated to the current app.
+        Get all patch records associated to the user.
 
         You can refine the results by using the same parameters as the regular `/search` endpoint.
       operationId: SearchPatches
@@ -155,24 +150,14 @@ paths:
             schema:
               type: object
               allOf: 
-                - type: object
-                  properties:
-                    status:
-                      type: string
-                      default: all
-                      description: Select data fixes with the corresponding status.
-                      example: approved
-                      enum:
-                      - all
-                      - pending
-                      - approved
+                - $ref: '#/components/schemas/parameters.status'
                 - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
                 - $ref: '#/components/schemas/parameters.offset'
             examples:
               status:
                 summary: Filter by status
-                description: Filter by `pending` data fixes
+                description: Select all `pending` patch records
                 value:
                   status: pending
               query:
@@ -199,14 +184,93 @@ paths:
         429:
           $ref: '#/components/responses/429'
   /patch:
-    put:
-      summary: Create or update a data fix
+    post:
+      summary: Create a new patch record
       description: |
-        To create a data fix, you must provide the exact entity you want to fix as the `origin` object.\
+        To create a new patch record, you must provide all the required properties.
+      operationId: CreatePatch
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - record
+              properties: 
+                record:
+                  required: 
+                    - name
+                    - city
+                    - county
+                    - administrative
+                    - country
+                    - countrycode
+                    - zipcode
+                    - population
+                    - coordinates
+                    - type
+                  allOf: 
+                    -  $ref: '#/components/schemas/record'
+                status:
+                  type: string
+                  default: pending
+                  description: |
+                    Status of the current patch record.\
+                    `pending`: the admin will need to validate the data. Once approved, the patch record will be avaiable to end-users.\
+                    `approved`: the patch record will be immediately available to end-users.
+                  example: pending
+                  enum:
+                  - pending
+                  - approved
+                language:
+                  type: string
+                  description: |
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Specify the language in which the patch record is written.
+                  example: en
+            examples:
+              datafix:
+                summary: Create a new patch record
+                description: Create a new patch record
+                value:
+                  record:
+                    name: Avenue New Road
+                    city: Rome
+                    county: Roma Capitale
+                    administrative: Lazio
+                    country: Italy
+                    countrycode: it
+                    zipcode: ['00137']
+                    population: 2776362
+                    coordinates: 41.9518005, 12.5644911
+                    type: street
+                  status: pending
+      responses:
+        200:
+          $ref: '#/components/responses/200.patch'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    put:
+      summary: Fix an existing record
+      description: |
+        To fix an existing record, you must provide the exact record you want to fix as the `origin` object.\
         You must also provide at least one of the property you want to modify in `update`.
 
-        If you want your data fixes to be immediately available to your end-users, set the property `status` to `approved`.\
-        Otherwise, the data fix will be marked as `pending` and will require the app owner to validate it first via the Dashboard or the API.
+        If you want your patch record to be immediately available to your end-users, set the property `status` to `approved`.\
+        Otherwise, the patch record will be marked as `pending` and will require the app owner to validate it via the Dashboard or the API.
       operationId: UpsertPatch
       tags: [ Live Patching ]
       requestBody:
@@ -230,22 +294,21 @@ paths:
                     - countrycode
                     - zipcode
                     - population
-                    - lat
-                    - lng
+                    - coordinates
                     - type
                   allOf: 
-                    -  $ref: '#/components/schemas/entity'
+                    -  $ref: '#/components/schemas/record'
                 update:
                   description: At least one property is necessary.
                   minProperties: 1 
-                  $ref: '#/components/schemas/entity'
+                  $ref: '#/components/schemas/record'
                 status:
                   type: string
                   default: pending
                   description: |
-                    Status of the current data fix.\
-                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
-                    `approved`: data fix will immediately be available to end-users.
+                    Status of the current patch record.\
+                    `pending`: the admin will need to validate the data. Once approved, the patch record will be avaiable to end-users.\
+                    `approved`: the patch record will be immediately available to end-users.
                   example: pending
                   enum:
                   - pending
@@ -254,15 +317,12 @@ paths:
                   type: string
                   description: |
                     [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
-                    Specify the language in which the data fix is written.
-                  example: fr
-                  enum:
-                  - en
-                  - fr
+                    Specify the language in which the patch record is written.
+                  example: en
             examples:
               datafix:
-                summary: Create a data fix
-                description: Create a data fix
+                summary: Edit a record
+                description: Edit a record
                 value:
                   origin:
                     name: Avenue des Champs Élysées
@@ -273,8 +333,7 @@ paths:
                     countrycode: fr
                     zipcode: ['75008']
                     population: 2220445
-                    lat: 48.871086
-                    lng: 2.3036339
+                    coordinates: 48.871086, 2.3036339
                     type: street
                   update:
                     name: rue des Nouveaux Champs Élysées
@@ -288,7 +347,7 @@ paths:
         403:
           $ref: '#/components/responses/403'
         404:
-          description: The provided `origin` entity could not be found
+          description: The provided `origin` record could not be found
         412:
           $ref: '#/components/responses/412'
         422:
@@ -297,11 +356,12 @@ paths:
           $ref: '#/components/responses/429'
   /patch/{id}:
     get:
-      summary: Get a data fix
+      summary: Get a patch record
       operationId: GetPatch
       tags: [ Live Patching ]
       parameters: 
         - $ref: '#/components/parameters/patch.id'
+        - $ref: '#/components/parameters/patch.language'
       responses: 
         200:
           $ref: '#/components/responses/200.patch'
@@ -310,7 +370,7 @@ paths:
         403:
           $ref: '#/components/responses/403'
         404:
-          description: The provided data fix `id` could not be found
+          description: The provided patch record `id` could not be found
         412:
           $ref: '#/components/responses/412'
         422:
@@ -318,7 +378,7 @@ paths:
         429:
           $ref: '#/components/responses/429'
     patch: 
-      summary: Edit a data fix
+      summary: Edit a patch record
       operationId: UpdatePatch
       tags: [ Live Patching ]
       parameters: 
@@ -334,13 +394,13 @@ paths:
                 update:
                   description: At least one property is necessary.
                   minProperties: 1 
-                  $ref: '#/components/schemas/entity'
+                  $ref: '#/components/schemas/record'
                 status:
                   type: string
                   description: |
                     Status of the current data fix.\
-                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
-                    `approved`: data fix will immediately be available to end-users.
+                    `pending`: the admin will need to validate the data. Once approved, the patch record will be avaiable to end-users.\
+                    `approved`: the patch record will be immediately available to end-users.
                   example: pending
                   enum:
                   - pending
@@ -349,18 +409,15 @@ paths:
                   type: string
                   description: |
                     [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
-                    Specify the language in which the data fix is written.
-                  example: fr
-                  enum:
-                  - en
-                  - fr
+                    Specify the language in which the patch record is written.
+                  example: en
             examples:
               status:
-                summary: Update data fix status
+                summary: Update patch record status
                 value:
                   status: approved
               datafix:
-                summary: Update data fix property
+                summary: Update patch record property
                 value:
                   update:
                     name: Rue des Nouveaux Champs Élysées
@@ -372,7 +429,7 @@ paths:
         403:
           $ref: '#/components/responses/403'
         404:
-          description: The provided data fix `id` could not be found
+          description: The provided patch record `id` could not be found
         412:
           $ref: '#/components/responses/412'
         422:
@@ -380,7 +437,7 @@ paths:
         429:
           $ref: '#/components/responses/429'
     delete:
-      summary: Delete a data fix
+      summary: Delete a patch record
       operationId: DeletePatch
       tags: [ Live Patching ]
       parameters: 
@@ -393,7 +450,40 @@ paths:
         403:
           $ref: '#/components/responses/403'
         404:
-          description: The provided data fix `id` could not be found
+          description: The provided patch record `id` could not be found
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+  /patch/{id}/language/{language}:
+    delete: 
+      summary: Delete a patch record translation
+      operationId: DeletePatchLanguage
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+        - name: language
+          in: path
+          required: true
+          description: |
+            [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+            Delete patch record language translation. There must be at least another translation available.
+          schema: 
+            type: string
+            format: ISO-639-1
+      responses:
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided patch record `id` could not be found
+        409:
+          description: Deletion impossible. There must be at least another translation available
         412:
           $ref: '#/components/responses/412'
         422:
@@ -406,10 +496,21 @@ components:
       name: id
       in: path
       required: true
-      description: Data fix identifier
+      description: Patch record unique identifier
       schema: 
         type: string
         format: md5
+    patch.language:
+      name: language
+      in: query
+      required: false
+      description: |
+        [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+        Default results are in their original language.\
+        By setting this parameter, you can change the language of the record, _if_ the translation is available.
+      schema: 
+        type: string
+        format: ISO-639-1
   schemas:
     parameters:
       type: object
@@ -428,18 +529,14 @@ components:
           description: |
             [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
             Default results are in their original language.\
-            By setting this parameter, you can change the language of the results, if the translation is available.\
-            Contact us if you need other languages.
-          example: fr
-          enum:
-          - en
-          - fr
+            By setting this parameter, you can change the language of the results, _if_ the translation is available.
+          example: en
         types:
           type: array
           description: |
             Select the types of record to return.\
             Prepend with `-` to omit a type.\
-            Returns all types by default.\
+            Returns all types by default.
             > Note: when the only type selected is `country`, `countries` parameter is optional.
           items:
             $ref: '#/components/schemas/types'
@@ -480,6 +577,16 @@ components:
           description: Get paginated results starting from the offset.
           default: 0
           minimum: 0
+    parameters.status:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Select patch records with the corresponding status.
+          example: approved
+          enum:
+            - pending
+            - approved
     parameters.query:
       type: object
       properties:
@@ -488,12 +595,12 @@ components:
           description: Search query terms.
           example: 42 avenue Champs Elysees Paris
           default: ''
-    entity:
+    record:
       type: object
       properties:
         name:
           type: string
-          description: Name of the current entity.
+          description: Name of the current record.
           example: 42 Avenue des Champs Élysées
         city:
           type: string
@@ -518,26 +625,36 @@ components:
           example: 'fr'
         zipcode:
           type: array
-          description: Postcodes associated with the entity.
+          description: Postcodes associated with the record.
           example:
           - '75008'
           items:
             type: string
         population:
           type: integer
-          description: Population number of the entity city.
+          description: Population number of the record city.
           example: 2220445
         lat:
+          deprecated: true
           type: number
-          description: Latitude value between `-90` and `90`.
+          description: |
+            Latitude value between `-90` and `90`.\
+            **Use `coordinates` instead.**
           example: 48.871086
         lng:
+          deprecated: true
           type: number
-          description: Longitude value between `-180` and `180`.
+          description: |
+            Longitude value between `-180` and `180`.\
+            **Use `coordinates` instead.**
           example: 2.3036339
+        coordinates:
+          type: string
+          description: GPS coordinates latitude and longitude of the current record.
+          example: 48.871086, 2.3036339
         type:
           type: string
-          description: Type of the entity.
+          description: Type of the record.
           example: street
           enum:
           - airport
@@ -548,19 +665,19 @@ components:
           - tourism
           - townhall
           - train
-    entity.id:
+    patch.id:
       type: object
       properties:
         id:
           type: string
           description: Data fix identifier.
           example: c9ce0be25ff6a74405c8cfa040e5ba1f
-    entity.status:
+    patch.status:
       type: object
       properties:
         status:
           type: string
-          description: Data fix status.
+          description: Patch record status.
           example: pending
     results:
       type: object
@@ -573,9 +690,9 @@ components:
                 properties:
                   highlight:
                     type: string
-                    description: Name of the current entity with highlighted matched words.
+                    description: Name of the current record with highlighted matched words.
                     example: <mark>42 Avenue</mark> des <mark>Champs Élysées</mark> 
-              - $ref: '#/components/schemas/entity'
+              - $ref: '#/components/schemas/record'
         resultsCount:
           type: integer
           description: Number of items results found.
@@ -603,7 +720,7 @@ components:
       properties:
         totalResults:
           type: integer
-          description: The total number of available items.
+          description: The total number of available records.
           example: 2
     types:
       type: string
@@ -637,7 +754,7 @@ components:
           type: string
   responses:
     200:
-      description: Returns a list of matching entities
+      description: Returns a list of matching records
       headers:
         RateLimit-Limit:
           schema:
@@ -666,16 +783,16 @@ components:
               - $ref: '#/components/schemas/results'
               - $ref: '#/components/schemas/results.query'
     200.patch:
-      description: Data fix successfully created
+      description: Patch record successfully created
       content:
         application/json:
           schema:
             allOf: 
-              - $ref: '#/components/schemas/entity.id'
-              - $ref: '#/components/schemas/entity.status'
-              - $ref: '#/components/schemas/entity'
+              - $ref: '#/components/schemas/patch.id'
+              - $ref: '#/components/schemas/patch.status'
+              - $ref: '#/components/schemas/record'
     200.patch.search:
-      description: Returns a list of matching entities
+      description: Returns a list of matching patch records
       content:
         application/json:
           schema:
@@ -683,8 +800,9 @@ components:
               - $ref: '#/components/schemas/results'
               - $ref: '#/components/schemas/results.offset'
               - $ref: '#/components/schemas/results.totalResults'
+              - $ref: '#/components/schemas/results.query'
     204:
-      description: Data fix successfully deleted
+      description: Patch record successfully deleted
     401:
       description: Access denied authentication failed
       content:
