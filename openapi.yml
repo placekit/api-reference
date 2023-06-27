@@ -462,6 +462,40 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
+  /patch/{id}/language/{language}:
+    delete: 
+      summary: Delete a data fix translation
+      operationId: DeletePatchLanguage
+      tags: [ Live Patching ]
+      parameters: 
+        - $ref: '#/components/parameters/patch.id'
+        - name: language
+          in: path
+          required: true
+          description: |
+            [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+            Delete entity language translation. There must be at least another translation available.
+          schema: 
+            type: string
+            format: ISO-639-1
+      responses:
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          description: The provided data fix `id` could not be found
+        409:
+          description: Deletion impossible. There must be at least another translation available
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+      
 components:
   parameters: 
     patch.id:
