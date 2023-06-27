@@ -140,7 +140,7 @@ paths:
       x-codegen-request-body-name: payload
   /patch/search:
     post:
-      summary: Retrieve data fixes
+      summary: List data fixes
       description: |
         Get all data fixes associated to the current app.
 
@@ -159,11 +159,9 @@ paths:
                   properties:
                     status:
                       type: string
-                      default: all
                       description: Select data fixes with the corresponding status.
                       example: approved
                       enum:
-                      - all
                       - pending
                       - approved
                 - $ref: '#/components/schemas/parameters.query'
