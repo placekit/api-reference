@@ -155,15 +155,7 @@ paths:
             schema:
               type: object
               allOf: 
-                - type: object
-                  properties:
-                    status:
-                      type: string
-                      description: Select data fixes with the corresponding status.
-                      example: approved
-                      enum:
-                      - pending
-                      - approved
+                - $ref: '#/components/schemas/parameters.status'
                 - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
                 - $ref: '#/components/schemas/parameters.offset'
@@ -197,6 +189,85 @@ paths:
         429:
           $ref: '#/components/responses/429'
   /patch:
+    post:
+      summary: Create a new entity
+      description: |
+        To create a new entity, you must provide all the required properties.
+      operationId: CreatePatch
+      tags: [ Live Patching ]
+      requestBody:
+        description: Request parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - record
+              properties: 
+                record:
+                  required: 
+                    - name
+                    - city
+                    - county
+                    - administrative
+                    - country
+                    - countrycode
+                    - zipcode
+                    - population
+                    - coordinates
+                    - type
+                  allOf: 
+                    -  $ref: '#/components/schemas/entity'
+                status:
+                  type: string
+                  default: pending
+                  description: |
+                    Status of the current data fix.\
+                    `pending`: admin will need to validate the data. Once approved, data fix will be avaiable to end-users.\
+                    `approved`: data fix will immediately be available to end-users.
+                  example: pending
+                  enum:
+                  - pending
+                  - approved
+                language:
+                  type: string
+                  description: |
+                    [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+                    Specify the language in which the data fix is written.
+                  example: en
+            examples:
+              datafix:
+                summary: Create a new entity
+                description: Create a new entity
+                value:
+                  record:
+                    name: Avenue New Road
+                    city: Rome
+                    county: Roma Capitale
+                    administrative: Lazio
+                    country: Italy
+                    countrycode: it
+                    zipcode: ['00137']
+                    population: 2776362
+                    coordinates: 41.9518005, 12.5644911
+                    type: street
+                  status: pending
+      responses:
+        200:
+          $ref: '#/components/responses/200.patch'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
     put:
       summary: Create or update a data fix
       description: |
@@ -295,6 +366,7 @@ paths:
       tags: [ Live Patching ]
       parameters: 
         - $ref: '#/components/parameters/patch.id'
+        - $ref: '#/components/parameters/patch.language'
       responses: 
         200:
           $ref: '#/components/responses/200.patch'
@@ -400,6 +472,17 @@ components:
       schema: 
         type: string
         format: md5
+    patch.language:
+      name: language
+      in: query
+      required: false
+      description: |
+        [Two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).\
+        Default results are in their original language.\
+        By setting this parameter, you can change the language of the entity, _if_ the translation is available.
+      schema: 
+        type: string
+        format: ISO-639-1
   schemas:
     parameters:
       type: object
@@ -466,6 +549,16 @@ components:
           description: Get paginated results starting from the offset.
           default: 0
           minimum: 0
+    parameters.status:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Select data fixes with the corresponding status.
+          example: approved
+          enum:
+            - pending
+            - approved
     parameters.query:
       type: object
       properties:
