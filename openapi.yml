@@ -21,12 +21,7 @@ tags:
       PlaceKit Geocoding API endpoints is composed of two similar endpoints `/search` and `/reverse`.\
       API clients are simple wrappers on top of this API.
   - name: Live Patching
-    x-displayName: Live Patching (unstable)
     description: |
-      ![Unstable](https://img.shields.io/badge/Status-Unstable-red)
-
-      ⚠️ **This API is unstable and likely to change** ⚠️
-
       PlaceKit Live Patching enables users to create a data validation flow in order to fix error or add new addresses, chose your validation flow and instantly publish it for your end-users.
 
       **Required**: A `private` API key is required to use Live Patching endpoints.
@@ -495,7 +490,6 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
-      
 components:
   parameters: 
     patch.id:
