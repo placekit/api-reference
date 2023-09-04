@@ -756,26 +756,16 @@ components:
     200:
       description: Returns a list of matching records
       headers:
-        RateLimit-Limit:
+        RateLimit:
           schema:
-            type: integer
-          description: Request limit per minute.
-          example: 5
-        RateLimit-Remaining:
+            type: string
+          description: Request limit information based on [IETF draft 7 standard](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers-07).
+          example: limit=10, remaining=9, reset=1
+        RateLimit-Policy:
           schema:
-            type: integer
-          description: The number of requests left for the time window.
-          example: 2
-        RateLimit-Reset:
-          schema:
-            type: integer
-          description: Indicates how many seconds are left to wait before making a follow-up request. 
-          example: 34
-        Retry-After:
-          schema: 
-            type: integer
-          description: Indicates how many seconds to wait before making a follow-up request.
-          example: 60
+            type: string
+          description: Request limit policy based on [IETF draft 7 standard](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers-07).
+          example: 10;w=1
       content:
         application/json:
           schema:
