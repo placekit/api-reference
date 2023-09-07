@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.1.1
+  version: 1.1.2
 servers:
 - url: https://api.placekit.co
 security:
@@ -35,6 +35,10 @@ paths:
         It will return results around `coordinates` (if provided) and the best matching textual relevance.
 
         **It is highly recommended** to set the `countries` parameter with the country you need results from for the best accuracy and revelance possible.
+        
+        If your use case allows your users to search in any country, then you should ommit `countries` parameter and let the API defines the user's country by its IP.
+
+        To have the best location accuracy, you should set `coordinates` based on your users' position.
       operationId: ForwardGeocoding
       tags: [ Geocoding ]
       requestBody:
@@ -43,8 +47,6 @@ paths:
         content:
           application/json:
             schema:
-              required: 
-                - countries
               allOf:
                 - $ref: '#/components/schemas/parameters.query'
                 - $ref: '#/components/schemas/parameters'
@@ -86,7 +88,8 @@ paths:
       description: |
         Performs a reverse geocoding search.
 
-        It will return the closest results around `coordinates`.\
+        It will return the closest results around `coordinates`.
+
         If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
       operationId: ReverseGeocoding
       tags: [ Geocoding ]
@@ -96,8 +99,6 @@ paths:
         content:
           application/json:
             schema:
-              required: 
-                - countries
               allOf: 
                 - $ref: '#/components/schemas/parameters'
                 - $ref: '#/components/schemas/parameters.countryByIP'
@@ -520,7 +521,8 @@ components:
           description: |
             Array of [two-letter ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).\
             Limit the results to given countries.\
-            Select only one country for the best results.
+            Select only one country for the best results.\
+            If not set, the API automatically selects the user's country defined by its IP.
           example: ['fr']
           items:
             type: string
@@ -537,7 +539,6 @@ components:
             Select the types of record to return.\
             Prepend with `-` to omit a type.\
             Returns all types by default.
-            > Note: when the only type selected is `country`, `countries` parameter is optional.
           items:
             $ref: '#/components/schemas/types'
         maxResults:
@@ -553,6 +554,7 @@ components:
             Used to improve relevancy of results around the given area.
           example: 48.873662, 2.295063
         countryByIP:
+          deprecated: true
           type: boolean
           default: false
           description: |
@@ -561,8 +563,10 @@ components:
             If set to `true`, the parameter `countries` acts as a fallback.
     parameters.countryByIP:
       type: object
+      deprecated: true
       properties: 
         countryByIP:
+          deprecated: true
           type: boolean
           default: true
           description: |
