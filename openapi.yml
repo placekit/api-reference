@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.1.1
+  version: 1.1.2
 servers:
 - url: https://api.placekit.co
 security:
@@ -63,6 +63,8 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
+        451:
+          $ref: '#/components/responses/451'
       x-codeSamples:
       - lang: curl
         source:
@@ -116,6 +118,8 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
+        451:
+          $ref: '#/components/responses/451'
       x-codeSamples:
       - lang: curl
         source:
@@ -869,6 +873,16 @@ components:
               status:
                 type: integer
                 example: 429
+    451:
+      description: Access denied fair usage policy violation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Access denied: application is violating PlaceKit Fair Usage Policy https://placekit.io/terms/fup.'
   securitySchemes:
     api_key:
       type: apiKey
