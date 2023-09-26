@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.1.2
+  version: 1.2.0
 servers:
 - url: https://api.placekit.co
 security:
@@ -25,6 +25,11 @@ tags:
       PlaceKit Live Patching feature enables users to create a data validation flow to fix data errors or add new addresses to their catalog, chose their validation flow and instantly publish it to their end-users.
 
       A `private` API key is **required** to use Live Patching endpoints.
+  - name: Keys
+    description: |
+      Handle your API keys programmatically.
+
+      A `private` API key is required to use Keys endpoints.
 paths:
   /search:
     post:
@@ -495,6 +500,164 @@ paths:
           $ref: '#/components/responses/422'
         429:
           $ref: '#/components/responses/429'
+  /keys:
+    get:
+      summary: List API keys
+      description: Get all API keys associated to the current key's app.
+      operationId: GetKeys
+      tags: [ Keys ]
+      responses:
+        200:
+          description: Key operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/key'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    post:
+      summary: Create an API key
+      description: Get all API keys associated to the current key's app.
+      operationId: CreateKey
+      tags: [ Keys ]
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                role:
+                  type: string
+                  default: public
+                  description: |
+                    Public API keys are <b>read-only</b> and are expected to be exposed to the browser.\
+                    A `public` API key can only perform Geocoding operations.\
+                    It is <b>highly recommended</b> to set `domains` when a `public` API key is in use.
+
+                    Private API keys are <b>read and write</b> and are meant to be used for admin use.\
+                    A `private` API key can perform all operations.
+                  enum:
+                    - public
+                    - private
+                domains:
+                  type: array
+                  uniqueItems: true
+                  items:
+                    type: string
+                    format: FQDN | IPv4 | IPv6
+                  description: Allow list of domains or IPs from which the requests to the API are allowed. 
+                  example: "['dev.domain.com', '82.123.239.43', 'my.domain.io']"
+      responses:
+        200:
+          $ref: '#/components/responses/200.key'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+  /keys/{id}:
+    get:
+      summary: Get an API key
+      operationId: GetKey
+      tags: [ Keys ]
+      parameters: 
+        - $ref: '#/components/parameters/key.id'
+      responses:
+        200:
+          $ref: '#/components/responses/200.key'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    patch:
+      summary: Update API key domains
+      operationId: UpdateKey
+      tags: [ Keys ]
+      parameters: 
+        - $ref: '#/components/parameters/key.id'
+      requestBody:
+        description: Request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                domains:
+                  type: array
+                  uniqueItems: true
+                  items:
+                    type: string
+                    format: FQDN | IPv4 | IPv6
+                  description: Allow list of domains or IPs from which the requests to the API are allowed. 
+                  example: "['dev.domain.com', '82.123.239.43', 'my.domain.io']"
+      responses:
+        200:
+          $ref: '#/components/responses/200.key'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+    delete:
+      summary: Delete an API key
+      operationId: DeleteKey
+      tags: [ Keys ]
+      parameters: 
+        - $ref: '#/components/parameters/key.id'
+      responses:
+        200:
+          description: API key deleted permanently.
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        412:
+          $ref: '#/components/responses/412'
+        422:
+          $ref: '#/components/responses/422'
+        429:
+          $ref: '#/components/responses/429'
+
 components:
   parameters: 
     patch.id:
@@ -516,6 +679,14 @@ components:
       schema: 
         type: string
         format: ISO-639-1
+    key.id:
+      name: id
+      in: path
+      required: true
+      description: Key unique identifier
+      schema: 
+        type: string
+        example: cln0clovg0001xpeh5oxv9tfs
   schemas:
     parameters:
       type: object
@@ -673,6 +844,53 @@ components:
           - tourism
           - townhall
           - train
+    key:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Key identifier.
+          example: cln0clovg0001xpeh5oxv9tfs
+        token:
+          type: string
+          description: |
+            API Key used to perform operations on the API.\
+            Set this key in the request header `x-placekit-api-key`.
+          example: pk_OGRVIUTnuxFEJUXNECjFrZ6sdVovGz1ojygkbzGXcbM=
+        appId:
+          type: string
+          description: App ID associated with this API key.
+          example: ULIMBXTYDH
+        role:
+          type: string
+          description: |
+            Public API keys are <b>read-only</b> and are expected to be exposed to the browser.\
+            A `public` API key can only perform Geocoding operations.\
+            It is <b>highly recommended</b> to set `domains` when a `public` API key is in use.
+
+            Private API keys are <b>read and write</b> and are meant to be used for admin use.\
+            A `private` API key can perform all operations.
+          enum:
+            - public
+            - private
+        domains:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: FQDN | IPv4 | IPv6
+          description: Allow list of domains or IPs from which the requests to the API are allowed. 
+          example: "['dev.domain.com', '82.123.239.43', 'my.domain.io']"
+        createdAt:
+          type: string
+          format: timestamp
+          description: Timestamp when the key was created.
+          example: 2023-09-26T13:23:27.077Z
+        updatedAt:
+          type: string
+          format: timestamp
+          description: Timestamp when the key was last modified.
+          example: 2023-09-26T13:24:37.862Z
     patch.id:
       type: object
       properties:
@@ -799,6 +1017,13 @@ components:
               - $ref: '#/components/schemas/results.offset'
               - $ref: '#/components/schemas/results.totalResults'
               - $ref: '#/components/schemas/results.query'
+    200.key:
+      description: Key operation successful
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: '#/components/schemas/key'
     204:
       description: Patch record successfully deleted
     401:
