@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.2.0
+  version: 1.2.1
 servers:
 - url: https://api.placekit.co
 security:
@@ -559,9 +559,9 @@ paths:
                   uniqueItems: true
                   items:
                     type: string
-                    format: FQDN | IPv4 | IPv6
-                  description: Allow list of domains or IPs from which the requests to the API are allowed. 
-                  example: "['dev.domain.com', '82.123.239.43', 'my.domain.io']"
+                    format: FQDN | IPv4 | IPv6 | localhost
+                  description: Allow list of domains or IPs from which the requests to the API are allowed. `localhost` and wildcard subdomains are supported.
+                  example: "['dev.domain.com', '82.123.239.43', '*.domain.io', 'localhost']"
       responses:
         200:
           $ref: '#/components/responses/200.key'
@@ -618,9 +618,9 @@ paths:
                   uniqueItems: true
                   items:
                     type: string
-                    format: FQDN | IPv4 | IPv6
-                  description: Allow list of domains or IPs from which the requests to the API are allowed. 
-                  example: "['dev.domain.com', '82.123.239.43', 'my.domain.io']"
+                    format: FQDN | IPv4 | IPv6 | localhost
+                  description: Allow list of domains or IPs from which the requests to the API are allowed. `localhost` and wildcard subdomains are supported.
+                  example: "['dev.domain.com', '82.123.239.43', '*.domain.io', 'localhost']"
       responses:
         200:
           $ref: '#/components/responses/200.key'
@@ -878,9 +878,9 @@ components:
           uniqueItems: true
           items:
             type: string
-            format: FQDN | IPv4 | IPv6
-          description: Allow list of domains or IPs from which the requests to the API are allowed. 
-          example: "['dev.domain.com', '82.123.239.43', 'my.domain.io']"
+            format: FQDN | IPv4 | IPv6 | localhost
+          description: Allow list of domains or IPs from which the requests to the API are allowed. `localhost` and wildcard subdomains are supported.
+          example: "['dev.domain.com', '82.123.239.43', '*.domain.io', 'localhost']"
         createdAt:
           type: string
           format: timestamp
