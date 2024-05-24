@@ -97,7 +97,7 @@ paths:
 
         It will return the closest results around `coordinates`.
 
-        If `coordinates` are not set, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
+        If `coordinates` are not provided, it will use the user's IP to approximate its coordinates but results will be less accurate (city level accuracy instead of street level accuracy).
       operationId: ReverseGeocoding
       tags: [ Geocoding ]
       requestBody:
