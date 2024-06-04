@@ -797,6 +797,10 @@ components:
           type: string
           description: Country name.
           example: France
+        administrativecode:
+          type: string
+          description: Administrative code abbreviation (currently only available for US states).
+          example: CA
         countrycode:
           type: string
           description: |
