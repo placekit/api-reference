@@ -10,7 +10,7 @@ info:
     name: API Support
     email: support@placekit.io
     url: https://api.placekit.co
-  version: 1.3.1
+  version: 1.4.0
 servers:
 - url: https://api.placekit.co
 security:
@@ -799,8 +799,9 @@ components:
           example: France
         administrativecode:
           type: string
-          description: Administrative code abbreviation (currently only available for US states).
-          example: CA
+          description: |
+            [ISO 3166-2 administrative code](https://en.wikipedia.org/wiki/ISO_3166-2) (available in CA, ES, IE, IT, US).
+          example: 'CA'
         citycode:
           type: string
           description: INSEE city code (only available for France cities).
@@ -810,6 +811,11 @@ components:
           description: |
             [Two-letter ISO 3166-1 country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
           example: 'fr'
+        countycode:
+          type: string
+          description: |
+            [Two-letter ISO 3166-2 county code](https://en.wikipedia.org/wiki/ISO_3166-2) (available in FR and IT).
+          example: '75'
         zipcode:
           type: array
           description: Postcodes associated with the record.
