@@ -19,6 +19,6 @@
     "lint": "redocly lint"
   },
   "dependencies": {
-    "@redocly/cli": "^1.19.0"
+    "@redocly/cli": "^1.24.0"
   }
 }
