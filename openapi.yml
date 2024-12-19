@@ -214,8 +214,6 @@ paths:
                   required: 
                     - name
                     - city
-                    - county
-                    - administrative
                     - country
                     - countrycode
                     - zipcode
@@ -298,8 +296,6 @@ paths:
                   required: 
                     - name
                     - city
-                    - county
-                    - administrative
                     - country
                     - countrycode
                     - zipcode
